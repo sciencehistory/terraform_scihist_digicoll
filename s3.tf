@@ -143,7 +143,11 @@ resource "aws_s3_bucket_policy" "dzi" {
 # ingest by app.
 #
 resource "aws_s3_bucket" "ingest_mount" {
-  bucket                      = "${local.name_prefix}-ingest-mount"
+    bucket                      = "${local.name_prefix}-ingest-mount"
+
+    lifecycle {
+      prevent_destroy           = true
+    }
 
     tags                      = {
         "service" = local.service_tag
@@ -212,6 +216,10 @@ resource "aws_s3_bucket_public_access_block" "ingest_mount" {
 # Doesn't need a public policy cause we just set public-read ACLs on individual objects.
 resource "aws_s3_bucket"  "ondemand_derivatives" {
     bucket                      = "${local.name_prefix}-ondemand-derivatives"
+
+    lifecycle {
+      prevent_destroy           = true
+    }
 
     tags                        = {
           "service" = local.service_tag
@@ -303,6 +311,10 @@ resource "aws_s3_bucket_public_access_block" "originals" {
 resource "aws_s3_bucket" "public" {
     bucket                      = "${local.name_prefix}-public"
 
+    lifecycle {
+      prevent_destroy           = true
+    }
+
     tags                        = {
         "service" = local.service_tag
         "use"     = "general_public"
@@ -328,7 +340,11 @@ resource "aws_s3_bucket_policy" "public" {
 resource "aws_s3_bucket"  "uploads" {
     bucket = "${local.name_prefix}-uploads"
 
-   tags                        = {
+    lifecycle {
+      prevent_destroy           = true
+    }
+
+    tags                        = {
         "service" = local.service_tag
         "use"     = "upload"
     }
