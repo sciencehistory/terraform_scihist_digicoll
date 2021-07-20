@@ -220,7 +220,7 @@ resource "aws_s3_bucket" "ingest_mount" {
     }
 
     lifecycle_rule {
-        enabled                                = true
+        enabled                                = false
         id                                     = "Expire files"
         expiration {
             days                         = 30
