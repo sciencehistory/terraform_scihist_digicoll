@@ -19,6 +19,8 @@
 #
 # Our standard app-created derivatives, in a public bucket
 #
+# Replication only in production.
+#
 resource "aws_s3_bucket" "derivatives" {
     bucket                      = "${local.name_prefix}-derivatives"
 
@@ -63,6 +65,26 @@ resource "aws_s3_bucket" "derivatives" {
         }
     }
 
+    # only Enabled for production.
+    dynamic "replication_configuration" {
+        // hacky way to make this conditional, once and only once on production.
+        for_each = terraform.workspace == "production" ? [1] : []
+        content {
+            # we're not controlling the IAM role with terraform, so we just hardcode it for now.
+            role = "arn:aws:iam::335460257737:role/S3-Backup-Replication"
+
+            rules {
+                id       = "Backup"
+                priority = 1
+                status   = "Enabled"
+
+                destination {
+                    bucket = "arn:aws:s3:::scihist-digicoll-${terraform.workspace}-derivatives-backup"
+                }
+            }
+        }
+    }
+
     versioning {
         enabled    = true
     }
@@ -78,6 +100,7 @@ resource "aws_s3_bucket_policy" "derivatives" {
 #
 # DZI tiles, in a public bucket. They are voluminous
 #
+# Replication only in production.
 resource "aws_s3_bucket" "dzi" {
     bucket                      = "${local.name_prefix}-dzi"
 
@@ -119,6 +142,27 @@ resource "aws_s3_bucket" "dzi" {
         transition {
             days          = 30
             storage_class = "STANDARD_IA"
+        }
+    }
+
+    # only Enabled for production.
+    dynamic "replication_configuration" {
+        // hacky way to make this conditional, once and only once on production.
+        for_each = terraform.workspace == "production" ? [1] : []
+
+        content {
+            # we're not controlling the IAM role with terraform, so we just hardcode it for now.
+            role = "arn:aws:iam::335460257737:role/S3-Backup-Replication"
+
+            rules {
+                id       = "Backup"
+                priority = 1
+                status   = "${terraform.workspace == "production" ? "Enabled" : "Disabled"}"
+
+                destination {
+                    bucket = "arn:aws:s3:::scihist-digicoll-${terraform.workspace}-dzi-backup"
+                }
+            }
         }
     }
 
@@ -258,6 +302,8 @@ resource "aws_s3_bucket"  "ondemand_derivatives" {
 #
 # Original assets, as ingested, in a private bucket
 #
+# Replication rule only for production.
+#
 resource "aws_s3_bucket" "originals" {
     bucket                      = "${local.name_prefix}-originals"
 
@@ -269,6 +315,28 @@ resource "aws_s3_bucket" "originals" {
         "service" = local.service_tag
         "use"     = "originals"
     }
+
+    # only Enabled for production.
+    dynamic "replication_configuration" {
+        // hacky way to make this conditional, once and only once on production.
+        for_each = terraform.workspace == "production" ? [1] : []
+
+        content {
+            # we're not controlling the IAM role with terraform, so we just hardcode it for now.
+            role = "arn:aws:iam::335460257737:role/S3-Backup-Replication"
+
+            rules {
+                id       = "Backup"
+                priority = 1
+                status   = "${terraform.workspace == "production" ? "Enabled" : "Disabled"}"
+
+                destination {
+                    bucket = "arn:aws:s3:::scihist-digicoll-${terraform.workspace}-originals-backup"
+                }
+            }
+        }
+    }
+
 
     lifecycle_rule {
         enabled                                = true
