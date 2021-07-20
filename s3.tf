@@ -55,7 +55,7 @@ resource "aws_s3_bucket" "derivatives" {
     }
     lifecycle_rule {
         enabled                                = true
-        id                                     = "scihist-digicoll-staging-derivatives-IA-Rule"
+        id                                     = "scihist-digicoll-${terraform.workspace}-derivatives-IA-Rule"
 
         transition {
             days          = 30
@@ -114,7 +114,7 @@ resource "aws_s3_bucket" "dzi" {
     }
     lifecycle_rule {
         enabled                                = true
-        id                                     = "scihist-digicoll-staging-dzi-IA-Rule"
+        id                                     = "scihist-digicoll-${terraform.workspace}-dzi-IA-Rule"
 
         transition {
             days          = 30
@@ -185,7 +185,7 @@ resource "aws_s3_bucket" "ingest_mount" {
     }
     lifecycle_rule {
         enabled                                = true
-        id                                     = "scihist-digicoll-staging-ingest-mount-IA-Rule"
+        id                                     = "scihist-digicoll-${terraform.workspace}-ingest-mount-IA-Rule"
 
         transition {
             days          = 30
@@ -237,7 +237,7 @@ resource "aws_s3_bucket"  "ondemand_derivatives" {
     }
     lifecycle_rule {
         enabled                                = true
-        id                                     = "scihist-digicoll-staging-ondemand-derivatives-IA-Rule"
+        id                                     = "scihist-digicoll-${terraform.workspace}-ondemand-derivatives-IA-Rule"
 
         transition {
             days          = 30
@@ -280,7 +280,7 @@ resource "aws_s3_bucket" "originals" {
 
     lifecycle_rule {
         enabled                                = true
-        id                                     = "scihist-digicoll-staging-originals-IA-Rule"
+        id                                     = "scihist-digicoll-${terraform.workspace}-originals-IA-Rule"
         transition {
             days          = 30
             storage_class = "STANDARD_IA"
@@ -381,7 +381,7 @@ resource "aws_s3_bucket"  "uploads" {
     }
     lifecycle_rule {
         enabled                                = true
-        id                                     = "scihist-digicoll-staging-uploads-IA-Rule"
+        id                                     = "scihist-digicoll-${terraform.workspace}-uploads-IA-Rule"
 
         transition {
             days          = 30
