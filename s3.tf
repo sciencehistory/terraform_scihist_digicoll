@@ -75,7 +75,7 @@ resource "aws_s3_bucket" "derivatives" {
 
             rules {
                 id       = "Backup"
-                priority = 1
+                priority = 0
                 status   = "Enabled"
 
                 destination {
@@ -156,8 +156,8 @@ resource "aws_s3_bucket" "dzi" {
 
             rules {
                 id       = "Backup"
-                priority = 1
-                status   = "${terraform.workspace == "production" ? "Enabled" : "Disabled"}"
+                priority = 0
+                status   = "Enabled"
 
                 destination {
                     bucket = "arn:aws:s3:::scihist-digicoll-${terraform.workspace}-dzi-backup"
@@ -327,8 +327,8 @@ resource "aws_s3_bucket" "originals" {
 
             rules {
                 id       = "Backup"
-                priority = 1
-                status   = "${terraform.workspace == "production" ? "Enabled" : "Disabled"}"
+                priority = 0
+                status   = "Enabled"
 
                 destination {
                     bucket = "arn:aws:s3:::scihist-digicoll-${terraform.workspace}-originals-backup"
