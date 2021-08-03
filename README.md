@@ -34,6 +34,10 @@ Don't use the default workspace, we don't use that.
 
 After selecting your workspace, you might want to run the standard commands `terraform plan` or `terraform apply`. BE CAREFUL what workspace you are in, production or staging!
 
+## Outputs
+
+Outputs in all caps may likely match heroku config vars that should be set to values. Initially `RAILS_ASSET_HOST` wtih cloudfront host. Run `terraform output`, or look for outputs after a `terraform apply`.
+
 ## Remote S3 Backend
 
 This configuration is configured to use a Remote S3 backend for terraform, in the `backend.tf` file. It is using an AWS dynanodb table for locking, as recommended by terraform remote S3 backend. The actual resources used for the Remote S3 backend are configured in `shared_state_s3.tf`.
@@ -50,12 +54,11 @@ At this writing, our terraform may not actually be managing an sensitive info. I
 
 ## Limitations, resources not controlled by terraform
 
-To begin with, we are only configuring things in terraform we had controlled by ansible in previous architecture: Mainly S3.
+To begin with, we are only configuring a limited subset of AWS resources in terraform: S3 and Cloudfront.
 
 This means we have some resources in AWS that are not configured here, but only set up manually.
 
 * IAM (users, groups, roles, policies) -- quite a bit. This would a good idea to get in terraform, but also kind of complicated.
-* Cloudfront
 * SES (SMTP email)
 
 Also we *could* (but don't) have non-AWS resources not controlled here. Some things (like most but not all of our heroku config) *could* be controlled via terraform. Other things (like SearchStax), probably not.
