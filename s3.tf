@@ -472,3 +472,157 @@ resource "aws_s3_bucket_public_access_block" "uploads" {
 }
 
 
+
+###
+#
+# BACKUP BUCKETS, *** only in production ***
+#
+###
+
+resource "aws_s3_bucket"  "derivatives_backup" {
+    count = "${terraform.workspace == "production" ? 1 : 0}"
+    provider = aws.backup
+
+    bucket = "${local.name_prefix}-derivatives-backup"
+
+    lifecycle {
+      prevent_destroy           = true
+    }
+
+    tags                        = {
+        "service" = local.service_tag
+        "use"     = "derivatives"
+    }
+
+    cors_rule {
+        allowed_headers = [
+            "*",
+        ]
+        allowed_methods = [
+            "GET",
+        ]
+        allowed_origins = [
+            "*",
+        ]
+        expose_headers  = []
+        max_age_seconds = 43200
+    }
+
+    lifecycle_rule {
+        enabled                                = true
+        id                                     = "Expire previous files"
+
+        noncurrent_version_expiration {
+            days = 30
+        }
+    }
+    lifecycle_rule {
+        enabled                                = true
+        id                                     = "scihist-digicoll-${terraform.workspace}-derivatives-backup-IA-Rule"
+
+        transition {
+            days          = 30
+            storage_class = "STANDARD_IA"
+        }
+    }
+
+    versioning {
+        enabled    = true
+    }
+}
+
+resource "aws_s3_bucket_policy" "derivatives_backup" {
+    count = "${terraform.workspace == "production" ? 1 : 0}"
+    provider = aws.backup
+
+    bucket = aws_s3_bucket.derivatives_backup[0].id
+    policy = templatefile("templates/s3_public_read_policy.tftpl", { bucket_name: aws_s3_bucket.derivatives_backup[0].id })
+}
+
+
+resource "aws_s3_bucket"  "dzi_backup" {
+    count = "${terraform.workspace == "production" ? 1 : 0}"
+    provider = aws.backup
+
+    bucket = "${local.name_prefix}-dzi-backup"
+
+    lifecycle {
+      prevent_destroy           = true
+    }
+
+    tags                        = {
+        "service" = "kithe"
+        "use"     = "dzi"
+    }
+
+    cors_rule {
+        allowed_headers = [
+            "*",
+        ]
+        allowed_methods = [
+            "GET",
+        ]
+        allowed_origins = [
+            "*",
+        ]
+        expose_headers  = []
+        max_age_seconds = 43200
+    }
+
+    lifecycle_rule {
+        enabled                                = true
+        id                                     = "Expire previous files"
+
+        noncurrent_version_expiration {
+            days = 30
+        }
+    }
+    lifecycle_rule {
+        enabled                                = true
+        id                                     = "scihist-digicoll-production-dzi-backup-IA-Rule"
+
+        transition {
+            days          = 30
+            storage_class = "STANDARD_IA"
+        }
+    }
+}
+
+resource "aws_s3_bucket_policy" "dzi_backup" {
+    count = "${terraform.workspace == "production" ? 1 : 0}"
+    provider = aws.backup
+
+    bucket = aws_s3_bucket.dzi_backup[0].id
+    policy = templatefile("templates/s3_public_read_policy.tftpl", { bucket_name: aws_s3_bucket.dzi_backup[0].id })
+}
+
+resource "aws_s3_bucket"  "originals_backup" {
+    count = "${terraform.workspace == "production" ? 1 : 0}"
+    provider = aws.backup
+
+    bucket = "${local.name_prefix}-originals-backup"
+
+    tags                        = {
+        "service" = "kithe"
+        "use"     = "originals"
+    }
+
+    lifecycle_rule {
+        enabled                                = true
+        id                                     = "Expire previous files"
+
+        noncurrent_version_expiration {
+            days = 30
+        }
+    }
+    lifecycle_rule {
+        enabled                                = true
+        id                                     = "Scihist-digicoll-production-originals-backup_Lifecycle"
+
+        transition {
+            days          = 30
+            storage_class = "STANDARD_IA"
+        }
+    }
+}
+
