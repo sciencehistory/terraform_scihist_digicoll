@@ -38,6 +38,14 @@ After selecting your workspace, you might want to run the standard commands `ter
 
 Outputs in all caps may likely match heroku config vars that should be set to values. Initially `RAILS_ASSET_HOST` wtih cloudfront host. Run `terraform output`, or look for outputs after a `terraform apply`.
 
+## Desired change workflow, git
+
+It's a bit confusing, but the idea is that for _production_ we *only* run `terraform apply` off of `main` branch, with all changes committed and pushed to github.
+
+In staging, you can run `terraform apply` off of a non-main branch. If all looks good, merge to main, then run on production off of main branch.
+
+While there's currently nothing to stop you, we really don't want to run production `terraform apply` off of changes that aren't both committed and pushed to github; or off of non-main branches.
+
 ## Remote S3 Backend
 
 This configuration is configured to use a Remote S3 backend for terraform, in the `backend.tf` file. It is using an AWS dynanodb table for locking, as recommended by terraform remote S3 backend. The actual resources used for the Remote S3 backend are configured in `shared_state_s3.tf`.
