@@ -1,5 +1,5 @@
 variable aws_access_profile {
-  default = "jrochkind"
+  default = "admin"
 }
 
 variable aws_region {
