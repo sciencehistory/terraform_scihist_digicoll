@@ -11,6 +11,8 @@ Or you can ask it to look in a different profile with eg `terraform plan -var="a
 
 We recommend you keep these high-privilege AWS credentails in your credentials file in a profile called admin.
 
+Beware, if you have the ENV varaibles set, they will always take precedence and be used!
+
 ## We use workspace for production/staging tiers
 
 We use the terraform _workspaces_ feature to join/separate staging and production. When we asked around, our library peers using terraform seemed to use this technique. While terraform docs/community are split on whether it's appropriate, couldn't find a better way to do it for our needs.
