@@ -3,6 +3,10 @@
 
 terraform {
   backend "s3" {
+    # can't use terraform variable in backend config, have to hard-code this!
+    # can still be overridden with AWS_PROFILE shell env though.
+    profile = "admin"
+
     bucket = "scihist-digicoll-terraform-state"
     region = "us-east-1"
     key = "scihist-digicoll/terraform.tfstate"

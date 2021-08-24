@@ -7,11 +7,11 @@ To execute terraform configuration, you need to be using AWS credentials with su
 Terraform will find these credentails in your environment. Either ENV variables
 `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`, OR your local [AWS credentials file](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html#cli-configure-files-where) by default in a profile called `admin`.
 
-Or you can ask it to look in a different profile with eg `terraform plan -var="aws_access_profile=other_profile_name"`.
+Or you can ask it to look in a different named profile with standard AWS_PROFILE env var, like `export AWS_PROFILE=other_profile_name`.
 
 We recommend you keep these high-privilege AWS credentails in your credentials file in a profile called admin.
 
-Beware, if you have the ENV varaibles set, they will always take precedence and be used!
+Beware, if you have the AWS_* ENV varaibles set, they will always take precedence and be used!
 
 ## We use workspace for production/staging tiers
 
