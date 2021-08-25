@@ -11,7 +11,9 @@ Or you can ask it to look in a different named profile with standard AWS_PROFILE
 
 We recommend you keep these high-privilege AWS credentails in your credentials file in a profile called admin.
 
-Beware, if you have the AWS_* ENV varaibles set, they will always take precedence and be used!
+**NOTE**, if you have the AWS_* ENV varaibles set, they will always take precedence and be used!
+
+**WARNING**, if you accidentally execute a terraform command without proper AWS credentials available, it may put your local terraform in a weird situation, where you need to re-run `terraform init` again after fixing credentials problems.  That should recover you and shouldn't result in any lasting problems though.
 
 ## We use workspace for production/staging tiers
 
