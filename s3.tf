@@ -15,7 +15,10 @@
 # * *PRIVATE* buckets also have a `aws_s3_bucket_public_access_block` terraform resourcce
 # to tell S3 to *forbid* public access, a standard S3 safety measure.
 #
-
+# * Tag "S3-Bucket-Name" -- all buckets should have a tag "S3-Bucket-Name" that contains
+# their same bucket name, this duplication is useful for various cost analysis. Unfortunately,
+# terraform makes us duplicate the calculation of bucket name in the tag definition, see
+# https://github.com/hashicorp/terraform/issues/23966
 #
 # Our standard app-created derivatives, in a public bucket
 #
@@ -31,6 +34,7 @@ resource "aws_s3_bucket" "derivatives" {
     tags                        = {
         "service" = local.service_tag
         "use"     = "derivatives"
+        "S3-Bucket-Name" = "${local.name_prefix}-derivatives"
     }
 
     cors_rule {
@@ -111,6 +115,7 @@ resource "aws_s3_bucket" "dzi" {
     tags                        = {
         "service" = local.service_tag
         "use"     = "dzi"
+        "S3-Bucket-Name" = "${local.name_prefix}-dzi"
     }
 
     cors_rule {
@@ -196,6 +201,7 @@ resource "aws_s3_bucket" "ingest_mount" {
     tags                      = {
         "service" = local.service_tag
         "use"     = "upload"
+        "S3-Bucket-Name" = "${local.name_prefix}-ingest-mount"
     }
 
     cors_rule {
@@ -268,6 +274,7 @@ resource "aws_s3_bucket"  "ondemand_derivatives" {
     tags                        = {
           "service" = local.service_tag
           "use"     = "cache"
+          "S3-Bucket-Name" = "${local.name_prefix}-ondemand-derivatives"
     }
 
     lifecycle_rule {
@@ -314,6 +321,7 @@ resource "aws_s3_bucket" "originals" {
     tags                        = {
         "service" = local.service_tag
         "use"     = "originals"
+        "S3-Bucket-Name" = "${local.name_prefix}-originals"
     }
 
     # only Enabled for production.
@@ -386,6 +394,7 @@ resource "aws_s3_bucket" "public" {
     tags                        = {
         "service" = local.service_tag
         "use"     = "general_public"
+        "S3-Bucket-Name" = "${local.name_prefix}-public"
     }
 
     versioning {
@@ -415,6 +424,7 @@ resource "aws_s3_bucket"  "uploads" {
     tags                        = {
         "service" = local.service_tag
         "use"     = "upload"
+        "S3-Bucket-Name" = "${local.name_prefix}-uploads"
     }
 
     cors_rule {
@@ -492,6 +502,7 @@ resource "aws_s3_bucket"  "derivatives_backup" {
     tags                        = {
         "service" = local.service_tag
         "use"     = "derivatives"
+        "S3-Bucket-Name" = "${local.name_prefix}-derivatives-backup"
     }
 
     cors_rule {
@@ -553,6 +564,7 @@ resource "aws_s3_bucket"  "dzi_backup" {
     tags                        = {
         "service" = "kithe"
         "use"     = "dzi"
+        "S3-Bucket-Name" = "${local.name_prefix}-dzi-backup"
     }
 
     cors_rule {
@@ -605,6 +617,7 @@ resource "aws_s3_bucket"  "originals_backup" {
     tags                        = {
         "service" = "kithe"
         "use"     = "originals"
+        "S3-Bucket-Name" = "${local.name_prefix}-originals-backup"
     }
 
     lifecycle_rule {
