@@ -19,6 +19,7 @@ resource "aws_s3_bucket" "terraform_state" {
   tags                        = {
       "service" = local.service_tag
       "use"     = "terraform"
+       "S3-Bucket-Name" = "scihist-digicoll-terraform-state"
   }
 
   # Enable versioning so we can see the full revision history of our
