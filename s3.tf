@@ -65,7 +65,7 @@ resource "aws_s3_bucket" "derivatives" {
 
         transition {
             days          = 30
-            storage_class = "STANDARD_IA"
+            storage_class = "INTELLIGENT_TIERING"
         }
     }
 
@@ -146,7 +146,7 @@ resource "aws_s3_bucket" "dzi" {
 
         transition {
             days          = 30
-            storage_class = "STANDARD_IA"
+            storage_class = "INTELLIGENT_TIERING"
         }
     }
 
@@ -359,7 +359,7 @@ resource "aws_s3_bucket" "originals" {
         id                                     = "scihist-digicoll-${terraform.workspace}-originals-IA-Rule"
         transition {
             days          = 30
-            storage_class = "STANDARD_IA"
+            storage_class = "INTELLIGENT_TIERING"
         }
     }
 
