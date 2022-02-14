@@ -61,11 +61,11 @@ resource "aws_s3_bucket" "derivatives" {
     }
     lifecycle_rule {
         enabled                                = true
-        id                                     = "scihist-digicoll-${terraform.workspace}-derivatives-IA-Rule"
+        id                                     = "scihist-digicoll-${terraform.workspace}-derivatives-IT-Rule"
 
         transition {
             days          = 30
-            storage_class = "STANDARD_IA"
+            storage_class = "INTELLIGENT_TIERING"
         }
     }
 
@@ -142,11 +142,11 @@ resource "aws_s3_bucket" "dzi" {
     }
     lifecycle_rule {
         enabled                                = true
-        id                                     = "scihist-digicoll-${terraform.workspace}-dzi-IA-Rule"
+        id                                     = "scihist-digicoll-${terraform.workspace}-dzi-IT-Rule"
 
         transition {
             days          = 30
-            storage_class = "STANDARD_IA"
+            storage_class = "INTELLIGENT_TIERING"
         }
     }
 
@@ -356,10 +356,10 @@ resource "aws_s3_bucket" "originals" {
 
     lifecycle_rule {
         enabled                                = true
-        id                                     = "scihist-digicoll-${terraform.workspace}-originals-IA-Rule"
+        id                                     = "scihist-digicoll-${terraform.workspace}-originals-IT-Rule"
         transition {
             days          = 30
-            storage_class = "STANDARD_IA"
+            storage_class = "INTELLIGENT_TIERING"
         }
     }
 
