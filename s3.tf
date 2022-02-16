@@ -637,5 +637,8 @@ resource "aws_s3_bucket"  "originals_backup" {
             storage_class = "STANDARD_IA"
         }
     }
+    versioning {
+        enabled    = true
+    }
 }
 
