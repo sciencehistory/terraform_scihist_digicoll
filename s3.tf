@@ -83,7 +83,7 @@ resource "aws_s3_bucket" "derivatives" {
                 status   = "Enabled"
 
                 destination {
-                    bucket = "arn:aws:s3:::scihist-digicoll-${terraform.workspace}-derivatives-backup"
+                    bucket = one(aws_s3_bucket.derivatives_backup).arn
                 }
             }
         }
@@ -165,7 +165,7 @@ resource "aws_s3_bucket" "dzi" {
                 status   = "Enabled"
 
                 destination {
-                    bucket = "arn:aws:s3:::scihist-digicoll-${terraform.workspace}-dzi-backup"
+                    bucket = one(aws_s3_bucket.dzi_backup).arn
                 }
             }
         }
@@ -339,7 +339,7 @@ resource "aws_s3_bucket" "originals" {
                 status   = "Enabled"
 
                 destination {
-                    bucket = "arn:aws:s3:::scihist-digicoll-${terraform.workspace}-originals-backup"
+                    bucket = one(aws_s3_bucket.originals_backup).arn
                 }
             }
         }
@@ -412,7 +412,7 @@ resource "aws_s3_bucket" "originals_video" {
                 status   = "Enabled"
 
                 destination {
-                    bucket = "arn:aws:s3:::scihist-digicoll-${terraform.workspace}-originals-video-backup"
+                    bucket = one(aws_s3_bucket.originals_video_backup).arn
                 }
             }
         }
