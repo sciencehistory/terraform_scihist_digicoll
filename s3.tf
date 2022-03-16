@@ -346,6 +346,15 @@ resource "aws_s3_bucket" "originals" {
     }
 
 
+    # We only have logging turned on for production_originals:
+    dynamic "logging" {
+        for_each = terraform.workspace == "production" ? [1] : []
+        content {
+                target_bucket = "chf-logs"
+                target_prefix = "s3_server_access"
+            }       
+    }
+
     lifecycle_rule {
         enabled                                = true
         id                                     = "Expire previous files"
