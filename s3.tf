@@ -346,7 +346,7 @@ resource "aws_s3_bucket" "originals" {
     }
 
 
-    # We only have logging turned on for staging_originals for now:
+    # We only have logging turned on for staging_originals and staging_originals_video for now:
     dynamic "logging" {
         for_each = terraform.workspace == "staging" ? [1] : []
         content {
@@ -427,7 +427,7 @@ resource "aws_s3_bucket" "originals_video" {
         }
     }
 
-    # We only have logging turned on for staging_originals for now:
+    # We only have logging turned on for staging_originals and staging_originals_video for now:
     dynamic "logging" {
         for_each = terraform.workspace == "staging" ? [1] : []
         content {
