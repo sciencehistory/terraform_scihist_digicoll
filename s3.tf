@@ -348,7 +348,7 @@ resource "aws_s3_bucket" "originals" {
 
     # We only have logging turned on for staging_originals and staging_originals_video for now:
     dynamic "logging" {
-        for_each = terraform.workspace == "staging" ? [1] : []
+        for_each = terraform.workspace == "production" ? [1] : []
         content {
                 target_bucket = "chf-logs"
                 target_prefix = "s3_server_access_${terraform.workspace}_originals/"
@@ -429,7 +429,7 @@ resource "aws_s3_bucket" "originals_video" {
 
     # We only have logging turned on for staging_originals and staging_originals_video for now:
     dynamic "logging" {
-        for_each = terraform.workspace == "staging" ? [1] : []
+        for_each = terraform.workspace == "production" ? [1] : []
         content {
                 target_bucket = "chf-logs"
                 target_prefix = "s3_server_access_${terraform.workspace}_originals_video/"
