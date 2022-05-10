@@ -120,7 +120,7 @@ resource "aws_cloudfront_distribution" "staging-derivatives-video" {
 # that will necessarily change if content does), but where origin (eg S3)
 # is not providing far-future Cache headers -- we add them in.
 resource "aws_cloudfront_response_headers_policy" "long-time-immutable-cache" {
-    name            = "long-time-immutable-cache"
+    name            = "long-time-immutable-cache-${terraform.workspace}"
     comment         = "far future Cache-Control"
 
     custom_headers_config {
