@@ -63,8 +63,8 @@ resource "aws_cloudfront_distribution" "rails_static_assets" {
 # * cheaper price class North America/Europe only
 # * add on cache-control header with far future caches for clients,
 #   since MediaConvert won't write those in our outputs in S3 already
-resource "aws_cloudfront_distribution" "staging-derivatives-video" {
-    comment                   = "staging-derivatives-video S3"
+resource "aws_cloudfront_distribution" "derivatives-video" {
+    comment                   = "${terraform.workspace}-derivatives-video S3"
     enabled                   = true
     is_ipv6_enabled           = true
 
