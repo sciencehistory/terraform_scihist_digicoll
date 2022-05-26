@@ -408,10 +408,10 @@ resource "aws_s3_bucket" "originals" {
         }
     }
 
-    # logging {
-    #    target_bucket = "chf-logs"
-    #    target_prefix = "s3_server_access_${terraform.workspace}_originals/"
-    # }
+    logging {
+        target_bucket = "chf-logs"
+        target_prefix = "s3_server_access_${terraform.workspace}_originals/"
+    }
 
     lifecycle_rule {
         enabled                                = true
@@ -485,10 +485,10 @@ resource "aws_s3_bucket" "originals_video" {
         }
     }
 
-    # logging {
-    #    target_bucket = "chf-logs"
-    #    target_prefix = "s3_server_access_${terraform.workspace}_originals_video/"
-    # }
+    logging {
+        target_bucket = "chf-logs"
+        target_prefix = "s3_server_access_${terraform.workspace}_originals_video/"
+    }
 
     lifecycle_rule {
         enabled                                = true
