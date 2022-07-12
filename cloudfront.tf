@@ -45,6 +45,11 @@ resource "aws_cloudfront_distribution" "rails_static_assets" {
         }
     }
 
+    tags                        = {
+        "Cloudfront-Distribution-Origin-Id" = "scihist-digicoll-${terraform.workspace}.herokuapp.com"
+    }
+
+
     restrictions {
         geo_restriction {
             locations        = []
@@ -75,6 +80,14 @@ resource "aws_cloudfront_distribution" "derivatives-video" {
         domain_name  = "scihist-digicoll-${terraform.workspace}-derivatives-video.s3.${var.aws_region}.amazonaws.com"
         origin_id    = "${terraform.workspace}-derivatives-video.s3"
     }
+
+    # add tag matching bucket name tag used for S3 buckets themselves,
+    # for cost analysis.
+    tags                        = {
+        "Cloudfront-Distribution-Origin-Id" = "${terraform.workspace}-derivatives-video.s3"
+        "S3-Bucket-Name" = "${local.name_prefix}-derivatives-video"
+    }
+
 
     default_cache_behavior {
         allowed_methods        = [
