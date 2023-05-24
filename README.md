@@ -72,8 +72,8 @@ This resulted in an additional setting in our configuration:
     }
 
 ```
-Amazon's announcement: https://aws.amazon.com/about-aws/whats-new/2023/01/amazon-s3-automatically-encrypts-new-objects/
-Our notes about this: https://github.com/sciencehistory/terraform_scihist_digicoll/issues/26
+* Amazon's announcement: https://aws.amazon.com/about-aws/whats-new/2023/01/amazon-s3-automatically-encrypts-new-objects/
+* Our notes about this: https://github.com/sciencehistory/terraform_scihist_digicoll/issues/26
 
 
 
