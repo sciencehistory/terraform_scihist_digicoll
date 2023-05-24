@@ -66,7 +66,7 @@ resource "aws_s3_bucket" "derivatives" {
         transition {
             days          = 30
             storage_class = "INTELLIGENT_TIERING"
-        } 
+        }
     }
 
     # only Enabled for production.
