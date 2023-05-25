@@ -56,6 +56,24 @@ This configuration is configured to use a Remote S3 backend for terraform, in th
 * https://mohitgoyal.co/2020/09/30/upload-terraform-state-files-to-remote-backend-amazon-s3-and-azure-storage-account/
 
 
+## About encryption at rest
+
+At the beginning of 2023, S3 started automatically encrypting all new files added to all s3 buckets by default:
+This resulted in an additional setting in our configuration:
+
+```
+    server_side_encryption_configuration {
+        rule {
+            bucket_key_enabled = false
+            apply_server_side_encryption_by_default {
+                sse_algorithm = "AES256"
+            }
+        }
+    }
+
+```
+* Amazon's announcement: https://aws.amazon.com/about-aws/whats-new/2023/01/amazon-s3-automatically-encrypts-new-objects/
+* Our notes about this: https://github.com/sciencehistory/terraform_scihist_digicoll/issues/26
 
 ## Formatting / linting
 

@@ -92,6 +92,15 @@ resource "aws_s3_bucket" "derivatives" {
   versioning {
     enabled = true
   }
+
+  server_side_encryption_configuration {
+    rule {
+      bucket_key_enabled = false
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
 }
 
 resource "aws_s3_bucket_policy" "derivatives" {
@@ -155,6 +164,15 @@ resource "aws_s3_bucket" "derivatives_video" {
 
   versioning {
     enabled = true
+  }
+
+  server_side_encryption_configuration {
+    rule {
+      bucket_key_enabled = false
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
   }
 }
 
@@ -237,6 +255,15 @@ resource "aws_s3_bucket" "dzi" {
   versioning {
     enabled = true
   }
+
+  server_side_encryption_configuration {
+    rule {
+      bucket_key_enabled = false
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
 }
 
 resource "aws_s3_bucket_policy" "dzi" {
@@ -309,6 +336,15 @@ resource "aws_s3_bucket" "ingest_mount" {
   versioning {
     enabled = false
   }
+
+  server_side_encryption_configuration {
+    rule {
+      bucket_key_enabled = false
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "ingest_mount" {
@@ -361,6 +397,15 @@ resource "aws_s3_bucket" "ondemand_derivatives" {
 
   versioning {
     enabled = false
+  }
+
+  server_side_encryption_configuration {
+    rule {
+      bucket_key_enabled = false
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
   }
 }
 
@@ -432,6 +477,15 @@ resource "aws_s3_bucket" "originals" {
 
   versioning {
     enabled = true
+  }
+
+  server_side_encryption_configuration {
+    rule {
+      bucket_key_enabled = false
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
   }
 }
 
@@ -510,6 +564,16 @@ resource "aws_s3_bucket" "originals_video" {
   versioning {
     enabled = true
   }
+
+
+  server_side_encryption_configuration {
+    rule {
+      bucket_key_enabled = false
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "originals_video" {
@@ -541,6 +605,15 @@ resource "aws_s3_bucket" "public" {
 
   versioning {
     enabled = false
+  }
+
+  server_side_encryption_configuration {
+    rule {
+      bucket_key_enabled = false
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
   }
 }
 
@@ -612,6 +685,15 @@ resource "aws_s3_bucket" "uploads" {
   versioning {
     enabled = false
   }
+
+  server_side_encryption_configuration {
+    rule {
+      bucket_key_enabled = false
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "uploads" {
@@ -682,6 +764,15 @@ resource "aws_s3_bucket" "derivatives_backup" {
   versioning {
     enabled = true
   }
+
+  server_side_encryption_configuration {
+    rule {
+      bucket_key_enabled = false
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
 }
 
 resource "aws_s3_bucket_policy" "derivatives_backup" {
@@ -740,6 +831,15 @@ resource "aws_s3_bucket" "dzi_backup" {
       storage_class = "STANDARD_IA"
     }
   }
+
+  server_side_encryption_configuration {
+    rule {
+      bucket_key_enabled = false
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
 }
 
 resource "aws_s3_bucket_policy" "dzi_backup" {
@@ -782,6 +882,15 @@ resource "aws_s3_bucket" "originals_backup" {
   versioning {
     enabled = true
   }
+
+  server_side_encryption_configuration {
+    rule {
+      bucket_key_enabled = false
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
 }
 
 resource "aws_s3_bucket" "originals_video_backup" {
@@ -816,5 +925,12 @@ resource "aws_s3_bucket" "originals_video_backup" {
   versioning {
     enabled = true
   }
+  server_side_encryption_configuration {
+    rule {
+      bucket_key_enabled = false
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
 }
-
