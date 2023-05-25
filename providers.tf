@@ -9,11 +9,11 @@ terraform {
 
 provider "aws" {
   profile = local.aws_access_profile
-  region = var.aws_region
+  region  = var.aws_region
 }
 
 provider "aws" {
-  alias = "backup"
+  alias   = "backup"
   profile = local.aws_access_profile
-  region = var.aws_backup_region
+  region  = var.aws_backup_region
 }
