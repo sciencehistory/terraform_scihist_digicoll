@@ -565,6 +565,7 @@ resource "aws_s3_bucket" "originals_video" {
     enabled = true
   }
 
+
   server_side_encryption_configuration {
     rule {
       bucket_key_enabled = false
@@ -933,4 +934,3 @@ resource "aws_s3_bucket" "originals_video_backup" {
     }
   }
 }
-
