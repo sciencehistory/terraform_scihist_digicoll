@@ -7,10 +7,10 @@ terraform {
     # can still be overridden with AWS_PROFILE shell env though.
     profile = "admin"
 
-    bucket = "scihist-digicoll-terraform-state"
-    region = "us-east-1"
-    key = "scihist-digicoll/terraform.tfstate"
+    bucket         = "scihist-digicoll-terraform-state"
+    region         = "us-east-1"
+    key            = "scihist-digicoll/terraform.tfstate"
     dynamodb_table = "scihist-digicoll-terraform-state-locks"
-    encrypt = true
+    encrypt        = true
   }
 }

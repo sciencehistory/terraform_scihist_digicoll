@@ -14,12 +14,12 @@
 resource "aws_s3_bucket" "terraform_state" {
   bucket = "scihist-digicoll-terraform-state"
 
-  count = "${terraform.workspace == "production" ? 1 : 0}"
+  count = terraform.workspace == "production" ? 1 : 0
 
-  tags                        = {
-      "service" = local.service_tag
-      "use"     = "terraform"
-       "S3-Bucket-Name" = "scihist-digicoll-terraform-state"
+  tags = {
+    "service"        = local.service_tag
+    "use"            = "terraform"
+    "S3-Bucket-Name" = "scihist-digicoll-terraform-state"
   }
 
   # Enable versioning so we can see the full revision history of our
@@ -41,7 +41,7 @@ resource "aws_s3_bucket" "terraform_state" {
 resource "aws_s3_bucket_public_access_block" "terraform_state" {
   bucket = aws_s3_bucket.terraform_state[0].id
 
-  count = "${terraform.workspace == "production" ? 1 : 0}"
+  count = terraform.workspace == "production" ? 1 : 0
 
   block_public_acls       = true
   block_public_policy     = true
@@ -50,16 +50,16 @@ resource "aws_s3_bucket_public_access_block" "terraform_state" {
 }
 
 resource "aws_dynamodb_table" "terraform_state_locks" {
-  name         = "scihist-digicoll-terraform-state-locks"
+  name = "scihist-digicoll-terraform-state-locks"
 
-  count = "${terraform.workspace == "production" ? 1 : 0}"
+  count = terraform.workspace == "production" ? 1 : 0
 
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "LockID"
 
-  tags                        = {
-      "service" = local.service_tag
-      "use"     = "terraform"
+  tags = {
+    "service" = local.service_tag
+    "use"     = "terraform"
   }
 
   attribute {
