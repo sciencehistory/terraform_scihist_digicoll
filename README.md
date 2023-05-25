@@ -56,6 +56,11 @@ This configuration is configured to use a Remote S3 backend for terraform, in th
 * https://mohitgoyal.co/2020/09/30/upload-terraform-state-files-to-remote-backend-amazon-s3-and-azure-storage-account/
 
 
+
+## Formatting / linting
+
+We will try to keep the `.tf` files formatted using `terraform fmt *.tf` before committing. This makes the diffs a lot easier to read. We are considering making a pre-commit hook to enforce this practice.
+
 ## Sensitive info
 
 **Do not put sensitive info in this repository**. Such as credentials etc.
