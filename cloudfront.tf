@@ -137,7 +137,6 @@ resource "aws_cloudfront_distribution" "derivatives-video" {
 resource "aws_cloudfront_distribution" "derivatives" {
 
   comment         = "${terraform.workspace}-derivatives S3"
-  http_version    = "http2"
   enabled         = true
   is_ipv6_enabled = true
 
@@ -145,10 +144,8 @@ resource "aws_cloudfront_distribution" "derivatives" {
   price_class = "PriceClass_100"
 
   origin {
-    connection_attempts = 3
-    connection_timeout  = 10
     domain_name         = "scihist-digicoll-${terraform.workspace}-derivatives.s3.${var.aws_region}.amazonaws.com"
-    origin_id           = "scihist-digicoll-${terraform.workspace}-derivatives.s3.${var.aws_region}.amazonaws.com"
+    origin_id           = "${terraform.workspace}-derivatives.s3"
   }
 
   # add tag matching bucket name tag used for S3 buckets themselves,
@@ -162,18 +159,20 @@ resource "aws_cloudfront_distribution" "derivatives" {
   default_cache_behavior {
     allowed_methods = [
       "GET",
-      "HEAD"
+      "HEAD",
+      "OPTIONS"
     ]
     cached_methods = [
       "GET",
-      "HEAD"
+      "HEAD",
+      "OPTIONS"
     ]
 
     # These derivs are already compressed. Adding gzip compression on top
     # won't help and may hurt.
     compress = false
 
-    target_origin_id       = "scihist-digicoll-${terraform.workspace}-derivatives.s3.${var.aws_region}.amazonaws.com"
+    target_origin_id       = "${terraform.workspace}-derivatives.s3"
     viewer_protocol_policy = "https-only"
 
     # AWS Managed policy for `Managed-CachingOptimizedForUncompressedObjects`
