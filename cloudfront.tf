@@ -129,6 +129,71 @@ resource "aws_cloudfront_distribution" "derivatives-video" {
   }
 }
 
+resource "aws_cloudfront_distribution" "derivatives" {
+
+  comment         = "${terraform.workspace}-derivatives S3"
+  http_version    = "http2"
+  enabled         = true
+  is_ipv6_enabled = true
+
+  # North America/Europe only, cheaper price class
+  price_class = "PriceClass_100"
+
+  origin {
+    connection_attempts = 3
+    connection_timeout  = 10
+    domain_name         = "scihist-digicoll-${terraform.workspace}-derivatives.s3.${var.aws_region}.amazonaws.com"
+    origin_id           = "scihist-digicoll-${terraform.workspace}-derivatives.s3.${var.aws_region}.amazonaws.com"
+  }
+
+  # add tag matching bucket name tag used for S3 buckets themselves,
+  # for cost analysis.
+  tags = {
+    "Cloudfront-Distribution-Origin-Id" = "${terraform.workspace}-derivatives.s3"
+    "S3-Bucket-Name"                    = "${local.name_prefix}-derivatives"
+  }
+
+
+  default_cache_behavior {
+    allowed_methods = [
+      "GET",
+      "HEAD"
+    ]
+    cached_methods = [
+      "GET",
+      "HEAD"
+    ]
+
+    # We're already sending mp4 content, adding gzip compression on top
+    # won't help and may hurt.
+    compress = false
+
+    target_origin_id       = "scihist-digicoll-${terraform.workspace}-derivatives.s3.${var.aws_region}.amazonaws.com"
+    viewer_protocol_policy = "https-only"
+
+    # AWS Managed policy for `Managed-CachingOptimizedForUncompressedObjects`
+    cache_policy_id = "b2884449-e4de-46a7-ac36-70bc7f1ddd6d"
+
+    # references policy for far-future Cache-Control header to be added
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.long-time-immutable-cache.id
+  }
+
+
+  restrictions {
+    geo_restriction {
+      locations        = []
+      restriction_type = "none"
+    }
+  }
+
+  viewer_certificate {
+    cloudfront_default_certificate = true
+    minimum_protocol_version       = "TLSv1"
+  }
+
+}
+
+
 # Used by any CloudFronts in front of content at "immutable" URLs (random URL
 # that will necessarily change if content does), but where origin (eg S3)
 # is not providing far-future Cache headers -- we add them in.
