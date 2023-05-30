@@ -129,6 +129,11 @@ resource "aws_cloudfront_distribution" "derivatives-video" {
   }
 }
 
+
+# Cloudfront distribution for our derivatives bucket.
+# This includes asset derivatives but also combined audio derivatives, which the
+# Oral Histories team uses for OHMS transcripts. This last use case is the primary impetus for
+# having this distribution.
 resource "aws_cloudfront_distribution" "derivatives" {
 
   comment         = "${terraform.workspace}-derivatives S3"
@@ -164,7 +169,7 @@ resource "aws_cloudfront_distribution" "derivatives" {
       "HEAD"
     ]
 
-    # We're already sending mp4 content, adding gzip compression on top
+    # These derivs are already compressed. Adding gzip compression on top
     # won't help and may hurt.
     compress = false
 
