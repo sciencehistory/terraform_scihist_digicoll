@@ -37,20 +37,6 @@ resource "aws_s3_bucket" "derivatives" {
     "S3-Bucket-Name" = "${local.name_prefix}-derivatives"
   }
 
-  cors_rule {
-    allowed_headers = [
-      "*",
-    ]
-    allowed_methods = [
-      "GET",
-    ]
-    allowed_origins = [
-      "*",
-    ]
-    expose_headers  = []
-    max_age_seconds = 43200
-  }
-
   lifecycle_rule {
     enabled = true
     id      = "Expire previous files"
@@ -108,6 +94,27 @@ resource "aws_s3_bucket_policy" "derivatives" {
   policy = templatefile("templates/s3_public_read_policy.tftpl", { bucket_name : aws_s3_bucket.derivatives.id })
 }
 
+
+resource "aws_s3_bucket_cors_configuration" "derivatives" {
+
+  bucket = aws_s3_bucket.derivatives.id
+
+  cors_rule {
+    allowed_headers = [
+      "*",
+    ]
+    allowed_methods = [
+      "GET",
+    ]
+    allowed_origins = [
+      "*",
+    ]
+    expose_headers  = []
+    max_age_seconds = 43200
+  }
+
+}
+
 # Video derivatives, expected to be mainly/only HLS. Set up in a separate bucket from
 # other videos for easier cost tracking. Also the method of creation/management differs.
 #
@@ -130,19 +137,6 @@ resource "aws_s3_bucket" "derivatives_video" {
     "S3-Bucket-Name" = "${local.name_prefix}-derivatives-video"
   }
 
-  cors_rule {
-    allowed_headers = [
-      "*",
-    ]
-    allowed_methods = [
-      "GET",
-    ]
-    allowed_origins = [
-      "*",
-    ]
-    expose_headers  = []
-    max_age_seconds = 43200
-  }
 
   lifecycle_rule {
     enabled = true
@@ -182,6 +176,27 @@ resource "aws_s3_bucket_policy" "derivatives-video" {
 }
 
 
+
+resource "aws_s3_bucket_cors_configuration" "derivatives-video" {
+
+  bucket = aws_s3_bucket.derivatives_video.id
+
+  cors_rule {
+    allowed_headers = [
+      "*",
+    ]
+    allowed_methods = [
+      "GET",
+    ]
+    allowed_origins = [
+      "*",
+    ]
+    expose_headers  = []
+    max_age_seconds = 43200
+  }
+
+}
+
 #
 # DZI tiles, in a public bucket. They are voluminous
 #
@@ -199,19 +214,6 @@ resource "aws_s3_bucket" "dzi" {
     "S3-Bucket-Name" = "${local.name_prefix}-dzi"
   }
 
-  cors_rule {
-    allowed_headers = [
-      "*",
-    ]
-    allowed_methods = [
-      "GET",
-    ]
-    allowed_origins = [
-      "*",
-    ]
-    expose_headers  = []
-    max_age_seconds = 43200
-  }
 
   lifecycle_rule {
     enabled = true
@@ -271,8 +273,25 @@ resource "aws_s3_bucket_policy" "dzi" {
   policy = templatefile("templates/s3_public_read_policy.tftpl", { bucket_name : aws_s3_bucket.dzi.id })
 }
 
+resource "aws_s3_bucket_cors_configuration" "dzi" {
 
+  bucket = aws_s3_bucket.dzi.id
 
+  cors_rule {
+    allowed_headers = [
+      "*",
+    ]
+    allowed_methods = [
+      "GET",
+    ]
+    allowed_origins = [
+      "*",
+    ]
+    expose_headers  = []
+    max_age_seconds = 43200
+  }
+
+}
 
 
 
@@ -294,26 +313,6 @@ resource "aws_s3_bucket" "ingest_mount" {
     "S3-Bucket-Name" = "${local.name_prefix}-ingest-mount"
   }
 
-  cors_rule {
-    allowed_headers = [
-      "Authorization",
-      "x-amz-date",
-      "x-amz-content-sha256",
-      "content-type",
-    ]
-    allowed_methods = [
-      "GET",
-      "POST",
-      "PUT",
-    ]
-    allowed_origins = [
-      "*",
-    ]
-    expose_headers = [
-      "ETag",
-    ]
-    max_age_seconds = 3000
-  }
 
   lifecycle_rule {
     enabled = false
@@ -357,6 +356,33 @@ resource "aws_s3_bucket_public_access_block" "ingest_mount" {
 }
 
 
+
+resource "aws_s3_bucket_cors_configuration" "ingest_mount" {
+
+  bucket = aws_s3_bucket.ingest_mount.id
+
+  cors_rule {
+    allowed_headers = [
+      "Authorization",
+      "x-amz-date",
+      "x-amz-content-sha256",
+      "content-type",
+    ]
+    allowed_methods = [
+      "GET",
+      "POST",
+      "PUT",
+    ]
+    allowed_origins = [
+      "*",
+    ]
+    expose_headers = [
+      "ETag",
+    ]
+    max_age_seconds = 3000
+  }
+
+}
 
 #
 # A bucket just for our on-demand derivatives, serves as a kind of cache, has
@@ -642,26 +668,6 @@ resource "aws_s3_bucket" "uploads" {
     "S3-Bucket-Name" = "${local.name_prefix}-uploads"
   }
 
-  cors_rule {
-    allowed_headers = [
-      "Authorization",
-      "x-amz-date",
-      "x-amz-content-sha256",
-      "content-type",
-    ]
-    allowed_methods = [
-      "GET",
-      "POST",
-      "PUT",
-    ]
-    allowed_origins = [
-      "*",
-    ]
-    expose_headers = [
-      "ETag",
-    ]
-    max_age_seconds = 3000
-  }
 
   lifecycle_rule {
     enabled = true
@@ -706,6 +712,32 @@ resource "aws_s3_bucket_public_access_block" "uploads" {
 }
 
 
+resource "aws_s3_bucket_cors_configuration" "uploads" {
+
+  bucket = aws_s3_bucket.uploads.id
+
+  cors_rule {
+    allowed_headers = [
+      "Authorization",
+      "x-amz-date",
+      "x-amz-content-sha256",
+      "content-type",
+    ]
+    allowed_methods = [
+      "GET",
+      "POST",
+      "PUT",
+    ]
+    allowed_origins = [
+      "*",
+    ]
+    expose_headers = [
+      "ETag",
+    ]
+    max_age_seconds = 3000
+  }
+
+}
 
 ###
 #
@@ -729,19 +761,6 @@ resource "aws_s3_bucket" "derivatives_backup" {
     "S3-Bucket-Name" = "${local.name_prefix}-derivatives-backup"
   }
 
-  cors_rule {
-    allowed_headers = [
-      "*",
-    ]
-    allowed_methods = [
-      "GET",
-    ]
-    allowed_origins = [
-      "*",
-    ]
-    expose_headers  = []
-    max_age_seconds = 43200
-  }
 
   lifecycle_rule {
     enabled = true
@@ -783,6 +802,27 @@ resource "aws_s3_bucket_policy" "derivatives_backup" {
   policy = templatefile("templates/s3_public_read_policy.tftpl", { bucket_name : aws_s3_bucket.derivatives_backup[0].id })
 }
 
+resource "aws_s3_bucket_cors_configuration" "derivatives_backup" {
+
+  count  = terraform.workspace == "production" ? 1 : 0
+  bucket = aws_s3_bucket.derivatives_backup[0].id
+
+  cors_rule {
+    allowed_headers = [
+      "*",
+    ]
+    allowed_methods = [
+      "GET",
+    ]
+    allowed_origins = [
+      "*",
+    ]
+    expose_headers  = []
+    max_age_seconds = 43200
+  }
+
+}
+
 
 resource "aws_s3_bucket" "dzi_backup" {
   count    = terraform.workspace == "production" ? 1 : 0
@@ -800,19 +840,6 @@ resource "aws_s3_bucket" "dzi_backup" {
     "S3-Bucket-Name" = "${local.name_prefix}-dzi-backup"
   }
 
-  cors_rule {
-    allowed_headers = [
-      "*",
-    ]
-    allowed_methods = [
-      "GET",
-    ]
-    allowed_origins = [
-      "*",
-    ]
-    expose_headers  = []
-    max_age_seconds = 43200
-  }
 
   lifecycle_rule {
     enabled = true
@@ -848,6 +875,28 @@ resource "aws_s3_bucket_policy" "dzi_backup" {
 
   bucket = aws_s3_bucket.dzi_backup[0].id
   policy = templatefile("templates/s3_public_read_policy.tftpl", { bucket_name : aws_s3_bucket.dzi_backup[0].id })
+}
+
+
+resource "aws_s3_bucket_cors_configuration" "dzi_backup" {
+
+  count  = terraform.workspace == "production" ? 1 : 0
+  bucket = aws_s3_bucket.dzi_backup[0].id
+
+  cors_rule {
+    allowed_headers = [
+      "*",
+    ]
+    allowed_methods = [
+      "GET",
+    ]
+    allowed_origins = [
+      "*",
+    ]
+    expose_headers  = []
+    max_age_seconds = 43200
+  }
+
 }
 
 resource "aws_s3_bucket" "originals_backup" {
