@@ -37,23 +37,21 @@ resource "aws_s3_bucket" "derivatives" {
     "S3-Bucket-Name" = "${local.name_prefix}-derivatives"
   }
 
-  lifecycle_rule {
-    enabled = true
-    id      = "Expire previous files"
-
-    noncurrent_version_expiration {
-      days = 30
-    }
+  cors_rule {
+    allowed_headers = [
+      "*",
+    ]
+    allowed_methods = [
+      "GET",
+    ]
+    allowed_origins = [
+      "*",
+    ]
+    expose_headers  = []
+    max_age_seconds = 43200
   }
-  lifecycle_rule {
-    enabled = true
-    id      = "scihist-digicoll-${terraform.workspace}-derivatives-IT-Rule"
 
-    transition {
-      days          = 30
-      storage_class = "INTELLIGENT_TIERING"
-    }
-  }
+
 
   # only Enabled for production.
   dynamic "replication_configuration" {
@@ -94,23 +92,24 @@ resource "aws_s3_bucket_policy" "derivatives" {
   policy = templatefile("templates/s3_public_read_policy.tftpl", { bucket_name : aws_s3_bucket.derivatives.id })
 }
 
-
-resource "aws_s3_bucket_cors_configuration" "derivatives" {
-
+resource "aws_s3_bucket_lifecycle_configuration" "derivatives" {
   bucket = aws_s3_bucket.derivatives.id
+  rule {
+    status = "Enabled"
+    id     = "Expire previous files"
 
-  cors_rule {
-    allowed_headers = [
-      "*",
-    ]
-    allowed_methods = [
-      "GET",
-    ]
-    allowed_origins = [
-      "*",
-    ]
-    expose_headers  = []
-    max_age_seconds = 43200
+    noncurrent_version_expiration {
+      noncurrent_days = 30
+    }
+  }
+  rule {
+    status = "Enabled"
+    id     = "scihist-digicoll-${terraform.workspace}-derivatives-IT-Rule"
+
+    noncurrent_version_transition {
+      noncurrent_days = 30
+      storage_class   = "INTELLIGENT_TIERING"
+    }
   }
 
 }
@@ -137,24 +136,20 @@ resource "aws_s3_bucket" "derivatives_video" {
     "S3-Bucket-Name" = "${local.name_prefix}-derivatives-video"
   }
 
-
-  lifecycle_rule {
-    enabled = true
-    id      = "Expire previous files"
-
-    noncurrent_version_expiration {
-      days = 30
-    }
+  cors_rule {
+    allowed_headers = [
+      "*",
+    ]
+    allowed_methods = [
+      "GET",
+    ]
+    allowed_origins = [
+      "*",
+    ]
+    expose_headers  = []
+    max_age_seconds = 43200
   }
-  lifecycle_rule {
-    enabled = true
-    id      = "scihist-digicoll-${terraform.workspace}-derivatives-IT-Rule"
 
-    transition {
-      days          = 30
-      storage_class = "INTELLIGENT_TIERING"
-    }
-  }
 
   versioning {
     enabled = true
@@ -175,24 +170,25 @@ resource "aws_s3_bucket_policy" "derivatives-video" {
   policy = templatefile("templates/s3_public_read_policy.tftpl", { bucket_name : aws_s3_bucket.derivatives_video.id })
 }
 
-
-
-resource "aws_s3_bucket_cors_configuration" "derivatives-video" {
-
+resource "aws_s3_bucket_lifecycle_configuration" "derivatives_video" {
   bucket = aws_s3_bucket.derivatives_video.id
 
-  cors_rule {
-    allowed_headers = [
-      "*",
-    ]
-    allowed_methods = [
-      "GET",
-    ]
-    allowed_origins = [
-      "*",
-    ]
-    expose_headers  = []
-    max_age_seconds = 43200
+  rule {
+    status = "Enabled"
+    id     = "Expire previous files"
+
+    noncurrent_version_expiration {
+      noncurrent_days = 30
+    }
+  }
+  rule {
+    status = "Enabled"
+    id     = "scihist-digicoll-${terraform.workspace}-derivatives-IT-Rule"
+
+    noncurrent_version_transition {
+      noncurrent_days = 30
+      storage_class   = "INTELLIGENT_TIERING"
+    }
   }
 
 }
@@ -214,24 +210,20 @@ resource "aws_s3_bucket" "dzi" {
     "S3-Bucket-Name" = "${local.name_prefix}-dzi"
   }
 
-
-  lifecycle_rule {
-    enabled = true
-    id      = "Expire previous files"
-
-    noncurrent_version_expiration {
-      days = 30
-    }
+  cors_rule {
+    allowed_headers = [
+      "*",
+    ]
+    allowed_methods = [
+      "GET",
+    ]
+    allowed_origins = [
+      "*",
+    ]
+    expose_headers  = []
+    max_age_seconds = 43200
   }
-  lifecycle_rule {
-    enabled = true
-    id      = "scihist-digicoll-${terraform.workspace}-dzi-IT-Rule"
 
-    transition {
-      days          = 30
-      storage_class = "INTELLIGENT_TIERING"
-    }
-  }
 
   # only Enabled for production.
   dynamic "replication_configuration" {
@@ -273,24 +265,27 @@ resource "aws_s3_bucket_policy" "dzi" {
   policy = templatefile("templates/s3_public_read_policy.tftpl", { bucket_name : aws_s3_bucket.dzi.id })
 }
 
-resource "aws_s3_bucket_cors_configuration" "dzi" {
-
+resource "aws_s3_bucket_lifecycle_configuration" "dzi" {
   bucket = aws_s3_bucket.dzi.id
 
-  cors_rule {
-    allowed_headers = [
-      "*",
-    ]
-    allowed_methods = [
-      "GET",
-    ]
-    allowed_origins = [
-      "*",
-    ]
-    expose_headers  = []
-    max_age_seconds = 43200
+  rule {
+    status = "Enabled"
+    id     = "Expire previous files"
+
+    noncurrent_version_expiration {
+      noncurrent_days = 30
+    }
   }
 
+  rule {
+    status = "Enabled"
+    id     = "scihist-digicoll-${terraform.workspace}-dzi-IT-Rule"
+
+    noncurrent_version_transition {
+      noncurrent_days = 30
+      storage_class   = "INTELLIGENT_TIERING"
+    }
+  }
 }
 
 
@@ -313,24 +308,27 @@ resource "aws_s3_bucket" "ingest_mount" {
     "S3-Bucket-Name" = "${local.name_prefix}-ingest-mount"
   }
 
-
-  lifecycle_rule {
-    enabled = false
-    id      = "Expire files"
-    expiration {
-      days                         = 30
-      expired_object_delete_marker = false
-    }
+  cors_rule {
+    allowed_headers = [
+      "Authorization",
+      "x-amz-date",
+      "x-amz-content-sha256",
+      "content-type",
+    ]
+    allowed_methods = [
+      "GET",
+      "POST",
+      "PUT",
+    ]
+    allowed_origins = [
+      "*",
+    ]
+    expose_headers = [
+      "ETag",
+    ]
+    max_age_seconds = 3000
   }
-  lifecycle_rule {
-    enabled = true
-    id      = "scihist-digicoll-${terraform.workspace}-ingest-mount-IA-Rule"
 
-    transition {
-      days          = 30
-      storage_class = "STANDARD_IA"
-    }
-  }
 
   versioning {
     enabled = false
@@ -355,33 +353,28 @@ resource "aws_s3_bucket_public_access_block" "ingest_mount" {
   restrict_public_buckets = true
 }
 
-
-
-resource "aws_s3_bucket_cors_configuration" "ingest_mount" {
-
+resource "aws_s3_bucket_lifecycle_configuration" "ingest_mount" {
   bucket = aws_s3_bucket.ingest_mount.id
 
-  cors_rule {
-    allowed_headers = [
-      "Authorization",
-      "x-amz-date",
-      "x-amz-content-sha256",
-      "content-type",
-    ]
-    allowed_methods = [
-      "GET",
-      "POST",
-      "PUT",
-    ]
-    allowed_origins = [
-      "*",
-    ]
-    expose_headers = [
-      "ETag",
-    ]
-    max_age_seconds = 3000
+  rule {
+    status = "Disabled"
+    id     = "Expire files"
+
+    expiration {
+      days                         = 30
+      expired_object_delete_marker = false
+    }
   }
 
+  rule {
+    status = "Enabled"
+    id     = "scihist-digicoll-${terraform.workspace}-ingest-mount-IA-Rule"
+
+    noncurrent_version_transition {
+      noncurrent_days = 30
+      storage_class   = "STANDARD_IA"
+    }
+  }
 }
 
 #
@@ -401,26 +394,6 @@ resource "aws_s3_bucket" "ondemand_derivatives" {
     "use"            = "cache"
     "S3-Bucket-Name" = "${local.name_prefix}-ondemand-derivatives"
   }
-
-  lifecycle_rule {
-    enabled = true
-    id      = "Expire files"
-
-    expiration {
-      days                         = 20
-      expired_object_delete_marker = false
-    }
-  }
-  lifecycle_rule {
-    enabled = true
-    id      = "scihist-digicoll-${terraform.workspace}-ondemand-derivatives-IA-Rule"
-
-    transition {
-      days          = 30
-      storage_class = "STANDARD_IA"
-    }
-  }
-
   versioning {
     enabled = false
   }
@@ -436,6 +409,30 @@ resource "aws_s3_bucket" "ondemand_derivatives" {
 }
 
 
+
+resource "aws_s3_bucket_lifecycle_configuration" "ondemand_derivatives" {
+  bucket = "${local.name_prefix}-ondemand-derivatives"
+
+  rule {
+    status = "Enabled"
+    id     = "Expire files"
+
+    expiration {
+      days                         = 20
+      expired_object_delete_marker = false
+    }
+  }
+
+  rule {
+    status = "Enabled"
+    id     = "scihist-digicoll-${terraform.workspace}-ondemand-derivatives-IA-Rule"
+
+    noncurrent_version_transition {
+      noncurrent_days = 30
+      storage_class   = "STANDARD_IA"
+    }
+  }
+}
 
 
 
@@ -484,22 +481,8 @@ resource "aws_s3_bucket" "originals" {
   #    target_prefix = "s3_server_access_${terraform.workspace}_originals/"
   # }
 
-  lifecycle_rule {
-    enabled = true
-    id      = "Expire previous files"
-    noncurrent_version_expiration {
-      days = 30
-    }
-  }
 
-  lifecycle_rule {
-    enabled = true
-    id      = "scihist-digicoll-${terraform.workspace}-originals-IT-Rule"
-    transition {
-      days          = 30
-      storage_class = "INTELLIGENT_TIERING"
-    }
-  }
+
 
   versioning {
     enabled = true
@@ -511,6 +494,31 @@ resource "aws_s3_bucket" "originals" {
       apply_server_side_encryption_by_default {
         sse_algorithm = "AES256"
       }
+    }
+  }
+}
+
+
+
+resource "aws_s3_bucket_lifecycle_configuration" "originals" {
+  bucket = "${local.name_prefix}-originals"
+
+  rule {
+    status = "Enabled"
+    id     = "Expire previous files"
+
+    expiration {
+      days = 30
+    }
+  }
+
+  rule {
+    status = "Enabled"
+    id     = "scihist-digicoll-${terraform.workspace}-originals-IT-Rule"
+
+    noncurrent_version_transition {
+      noncurrent_days = 30
+      storage_class   = "INTELLIGENT_TIERING"
     }
   }
 }
@@ -570,22 +578,8 @@ resource "aws_s3_bucket" "originals_video" {
   #    target_prefix = "s3_server_access_${terraform.workspace}_originals_video/"
   # }
 
-  lifecycle_rule {
-    enabled = true
-    id      = "Expire previous files"
-    noncurrent_version_expiration {
-      days = 30
-    }
-  }
 
-  lifecycle_rule {
-    enabled = true
-    id      = "scihist-digicoll-${terraform.workspace}-originals-video-IT-Rule"
-    transition {
-      days          = 30
-      storage_class = "INTELLIGENT_TIERING"
-    }
-  }
+
 
   versioning {
     enabled = true
@@ -601,6 +595,33 @@ resource "aws_s3_bucket" "originals_video" {
     }
   }
 }
+
+
+resource "aws_s3_bucket_lifecycle_configuration" "originals_video" {
+  bucket = "${local.name_prefix}-originals-video"
+
+
+
+  rule {
+    status = "Enabled"
+    id     = "Expire previous files"
+
+    expiration {
+      days = 30
+    }
+  }
+
+  rule {
+    status = "Enabled"
+    id     = "scihist-digicoll-${terraform.workspace}-originals-video-IT-Rule"
+
+    noncurrent_version_transition {
+      noncurrent_days = 30
+      storage_class   = "INTELLIGENT_TIERING"
+    }
+  }
+}
+
 
 resource "aws_s3_bucket_public_access_block" "originals_video" {
   bucket = aws_s3_bucket.originals_video.id
@@ -668,54 +689,6 @@ resource "aws_s3_bucket" "uploads" {
     "S3-Bucket-Name" = "${local.name_prefix}-uploads"
   }
 
-
-  lifecycle_rule {
-    enabled = true
-    id      = "Expire files"
-
-    expiration {
-      days                         = 30
-      expired_object_delete_marker = false
-    }
-  }
-  lifecycle_rule {
-    enabled = true
-    id      = "scihist-digicoll-${terraform.workspace}-uploads-IA-Rule"
-
-    transition {
-      days          = 30
-      storage_class = "STANDARD_IA"
-    }
-  }
-
-  versioning {
-    enabled = false
-  }
-
-  server_side_encryption_configuration {
-    rule {
-      bucket_key_enabled = false
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
-}
-
-resource "aws_s3_bucket_public_access_block" "uploads" {
-  bucket = aws_s3_bucket.uploads.id
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-}
-
-
-resource "aws_s3_bucket_cors_configuration" "uploads" {
-
-  bucket = aws_s3_bucket.uploads.id
-
   cors_rule {
     allowed_headers = [
       "Authorization",
@@ -737,7 +710,57 @@ resource "aws_s3_bucket_cors_configuration" "uploads" {
     max_age_seconds = 3000
   }
 
+
+
+  versioning {
+    enabled = false
+  }
+
+  server_side_encryption_configuration {
+    rule {
+      bucket_key_enabled = false
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
 }
+
+
+resource "aws_s3_bucket_lifecycle_configuration" "uploads" {
+  bucket = "${local.name_prefix}-uploads"
+
+  rule {
+    status = "Enabled"
+    id     = "Expire files"
+
+    expiration {
+      days = 30
+    }
+  }
+
+  rule {
+    status = "Enabled"
+    id     = "scihist-digicoll-${terraform.workspace}-uploads-IA-Rule"
+
+    noncurrent_version_transition {
+      noncurrent_days = 30
+      storage_class   = "STANDARD_IA"
+    }
+  }
+}
+
+
+resource "aws_s3_bucket_public_access_block" "uploads" {
+  bucket = aws_s3_bucket.uploads.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+
 
 ###
 #
@@ -761,24 +784,21 @@ resource "aws_s3_bucket" "derivatives_backup" {
     "S3-Bucket-Name" = "${local.name_prefix}-derivatives-backup"
   }
 
-
-  lifecycle_rule {
-    enabled = true
-    id      = "Expire previous files"
-
-    noncurrent_version_expiration {
-      days = 30
-    }
+  cors_rule {
+    allowed_headers = [
+      "*",
+    ]
+    allowed_methods = [
+      "GET",
+    ]
+    allowed_origins = [
+      "*",
+    ]
+    expose_headers  = []
+    max_age_seconds = 43200
   }
-  lifecycle_rule {
-    enabled = true
-    id      = "scihist-digicoll-${terraform.workspace}-derivatives-backup-IA-Rule"
 
-    transition {
-      days          = 30
-      storage_class = "STANDARD_IA"
-    }
-  }
+
 
   versioning {
     enabled = true
@@ -794,33 +814,37 @@ resource "aws_s3_bucket" "derivatives_backup" {
   }
 }
 
+
+resource "aws_s3_bucket_lifecycle_configuration" "derivatives_backup" {
+  count  = terraform.workspace == "production" ? 1 : 0
+  bucket = "${local.name_prefix}-derivatives-backup"
+
+  rule {
+    status = "Enabled"
+    id     = "Expire previous files"
+
+    expiration {
+      days = 30
+    }
+  }
+  rule {
+    status = "Enabled"
+    id     = "scihist-digicoll-${terraform.workspace}-derivatives-backup-IA-Rule"
+
+    noncurrent_version_transition {
+      noncurrent_days = 30
+      storage_class   = "STANDARD_IA"
+    }
+  }
+}
+
+
 resource "aws_s3_bucket_policy" "derivatives_backup" {
   count    = terraform.workspace == "production" ? 1 : 0
   provider = aws.backup
 
   bucket = aws_s3_bucket.derivatives_backup[0].id
   policy = templatefile("templates/s3_public_read_policy.tftpl", { bucket_name : aws_s3_bucket.derivatives_backup[0].id })
-}
-
-resource "aws_s3_bucket_cors_configuration" "derivatives_backup" {
-
-  count  = terraform.workspace == "production" ? 1 : 0
-  bucket = aws_s3_bucket.derivatives_backup[0].id
-
-  cors_rule {
-    allowed_headers = [
-      "*",
-    ]
-    allowed_methods = [
-      "GET",
-    ]
-    allowed_origins = [
-      "*",
-    ]
-    expose_headers  = []
-    max_age_seconds = 43200
-  }
-
 }
 
 
@@ -840,49 +864,6 @@ resource "aws_s3_bucket" "dzi_backup" {
     "S3-Bucket-Name" = "${local.name_prefix}-dzi-backup"
   }
 
-
-  lifecycle_rule {
-    enabled = true
-    id      = "Expire previous files"
-
-    noncurrent_version_expiration {
-      days = 30
-    }
-  }
-  lifecycle_rule {
-    enabled = true
-    id      = "scihist-digicoll-production-dzi-backup-IA-Rule"
-
-    transition {
-      days          = 30
-      storage_class = "STANDARD_IA"
-    }
-  }
-
-  server_side_encryption_configuration {
-    rule {
-      bucket_key_enabled = false
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
-}
-
-resource "aws_s3_bucket_policy" "dzi_backup" {
-  count    = terraform.workspace == "production" ? 1 : 0
-  provider = aws.backup
-
-  bucket = aws_s3_bucket.dzi_backup[0].id
-  policy = templatefile("templates/s3_public_read_policy.tftpl", { bucket_name : aws_s3_bucket.dzi_backup[0].id })
-}
-
-
-resource "aws_s3_bucket_cors_configuration" "dzi_backup" {
-
-  count  = terraform.workspace == "production" ? 1 : 0
-  bucket = aws_s3_bucket.dzi_backup[0].id
-
   cors_rule {
     allowed_headers = [
       "*",
@@ -897,6 +878,48 @@ resource "aws_s3_bucket_cors_configuration" "dzi_backup" {
     max_age_seconds = 43200
   }
 
+
+
+  server_side_encryption_configuration {
+    rule {
+      bucket_key_enabled = false
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+}
+
+
+resource "aws_s3_bucket_lifecycle_configuration" "dzi_backup" {
+  count  = terraform.workspace == "production" ? 1 : 0
+  bucket = "${local.name_prefix}-dzi-backup"
+
+  rule {
+    status = "Enabled"
+    id     = "Expire previous files"
+
+    expiration {
+      days = 30
+    }
+  }
+  rule {
+    status = "Enabled"
+    id     = "scihist-digicoll-production-dzi-backup-IA-Rule"
+
+    noncurrent_version_transition {
+      noncurrent_days = 30
+      storage_class   = "STANDARD_IA"
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "dzi_backup" {
+  count    = terraform.workspace == "production" ? 1 : 0
+  provider = aws.backup
+
+  bucket = aws_s3_bucket.dzi_backup[0].id
+  policy = templatefile("templates/s3_public_read_policy.tftpl", { bucket_name : aws_s3_bucket.dzi_backup[0].id })
 }
 
 resource "aws_s3_bucket" "originals_backup" {
@@ -911,23 +934,6 @@ resource "aws_s3_bucket" "originals_backup" {
     "S3-Bucket-Name" = "${local.name_prefix}-originals-backup"
   }
 
-  lifecycle_rule {
-    enabled = true
-    id      = "Expire previous files"
-
-    noncurrent_version_expiration {
-      days = 30
-    }
-  }
-  lifecycle_rule {
-    enabled = true
-    id      = "Scihist-digicoll-production-originals-backup_Lifecycle"
-
-    transition {
-      days          = 30
-      storage_class = "STANDARD_IA"
-    }
-  }
   versioning {
     enabled = true
   }
@@ -942,6 +948,33 @@ resource "aws_s3_bucket" "originals_backup" {
   }
 }
 
+
+
+resource "aws_s3_bucket_lifecycle_configuration" "originals_backup" {
+  count  = terraform.workspace == "production" ? 1 : 0
+  bucket = "${local.name_prefix}-originals-backup"
+
+
+  rule {
+    status = "Enabled"
+    id     = "Expire previous files"
+
+    expiration {
+      days = 30
+    }
+  }
+  rule {
+    status = "Enabled"
+    id     = "Scihist-digicoll-production-originals-backup_Lifecycle"
+
+    noncurrent_version_transition {
+      noncurrent_days = 30
+      storage_class   = "STANDARD_IA"
+    }
+  }
+}
+
+
 resource "aws_s3_bucket" "originals_video_backup" {
   count    = terraform.workspace == "production" ? 1 : 0
   provider = aws.backup
@@ -954,23 +987,6 @@ resource "aws_s3_bucket" "originals_video_backup" {
     "S3-Bucket-Name" = "${local.name_prefix}-originals-video-backup"
   }
 
-  lifecycle_rule {
-    enabled = true
-    id      = "Expire previous files"
-
-    noncurrent_version_expiration {
-      days = 30
-    }
-  }
-  lifecycle_rule {
-    enabled = true
-    id      = "${local.name_prefix}-originals-video-backup_Lifecycle"
-
-    transition {
-      days          = 30
-      storage_class = "STANDARD_IA"
-    }
-  }
   versioning {
     enabled = true
   }
@@ -980,6 +996,31 @@ resource "aws_s3_bucket" "originals_video_backup" {
       apply_server_side_encryption_by_default {
         sse_algorithm = "AES256"
       }
+    }
+  }
+}
+
+
+resource "aws_s3_bucket_lifecycle_configuration" "originals_video_backup" {
+  count  = terraform.workspace == "production" ? 1 : 0
+  bucket = "${local.name_prefix}-originals-video-backup"
+
+  rule {
+    status = "Enabled"
+    id     = "Expire previous files"
+
+    expiration {
+      days = 30
+    }
+  }
+
+  rule {
+    status = "Enabled"
+    id     = "${local.name_prefix}-originals-video-backup_Lifecycle"
+
+    noncurrent_version_transition {
+      noncurrent_days = 30
+      storage_class   = "STANDARD_IA"
     }
   }
 }
