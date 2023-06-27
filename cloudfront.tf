@@ -144,8 +144,8 @@ resource "aws_cloudfront_distribution" "derivatives" {
   price_class = "PriceClass_100"
 
   origin {
-    domain_name         = "scihist-digicoll-${terraform.workspace}-derivatives.s3.${var.aws_region}.amazonaws.com"
-    origin_id           = "${terraform.workspace}-derivatives.s3"
+    domain_name = "scihist-digicoll-${terraform.workspace}-derivatives.s3.${var.aws_region}.amazonaws.com"
+    origin_id   = "${terraform.workspace}-derivatives.s3"
   }
 
   # add tag matching bucket name tag used for S3 buckets themselves,
