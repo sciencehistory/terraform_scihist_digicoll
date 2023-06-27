@@ -398,7 +398,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "ingest_mount" {
 resource "aws_s3_bucket_versioning" "ingest_mount" {
   bucket = aws_s3_bucket.ingest_mount.id
   versioning_configuration {
-    status = "Enabled"
+    status = "Disabled"
   }
 }
 
@@ -457,7 +457,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "ondemand_derivatives" {
 resource "aws_s3_bucket_versioning" "ondemand_derivatives" {
   bucket = aws_s3_bucket.ondemand_derivatives.id
   versioning_configuration {
-    status = "Enabled"
+    status = "Disabled"
   }
 }
 
@@ -774,9 +774,11 @@ resource "aws_s3_bucket_lifecycle_configuration" "uploads" {
   }
 }
 
-resource "aws_s3_bucket_policy" "uploads" {
+resource "aws_s3_bucket_versioning" "uploads" {
   bucket = aws_s3_bucket.uploads.id
-  policy = templatefile("templates/s3_public_read_policy.tftpl", { bucket_name : aws_s3_bucket.public.id })
+  versioning_configuration {
+    status = "Disabled"
+  }
 }
 
 ###
