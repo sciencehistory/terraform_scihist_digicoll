@@ -57,10 +57,6 @@ resource "aws_s3_bucket" "derivatives" {
     }
   }
 
-  versioning {
-    enabled = true
-  }
-
   server_side_encryption_configuration {
     rule {
       bucket_key_enabled = false
@@ -75,8 +71,6 @@ resource "aws_s3_bucket_policy" "derivatives" {
   bucket = aws_s3_bucket.derivatives.id
   policy = templatefile("templates/s3_public_read_policy.tftpl", { bucket_name : aws_s3_bucket.derivatives.id })
 }
-
-
 
 resource "aws_s3_bucket_cors_configuration" "derivatives" {
 
@@ -95,7 +89,6 @@ resource "aws_s3_bucket_cors_configuration" "derivatives" {
     expose_headers  = []
     max_age_seconds = 43200
   }
-
 }
 
 
@@ -118,9 +111,14 @@ resource "aws_s3_bucket_lifecycle_configuration" "derivatives" {
       storage_class   = "INTELLIGENT_TIERING"
     }
   }
-
 }
 
+resource "aws_s3_bucket_versioning" "derivatives" {
+  bucket = aws_s3_bucket.derivatives.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
 
 # Video derivatives, expected to be mainly/only HLS. Set up in a separate bucket from
 # other videos for easier cost tracking. Also the method of creation/management differs.
@@ -144,10 +142,6 @@ resource "aws_s3_bucket" "derivatives_video" {
     "S3-Bucket-Name" = "${local.name_prefix}-derivatives-video"
   }
 
-
-  versioning {
-    enabled = true
-  }
 
   server_side_encryption_configuration {
     rule {
@@ -176,14 +170,12 @@ resource "aws_s3_bucket_cors_configuration" "derivatives_video" {
     expose_headers  = []
     max_age_seconds = 43200
   }
-
 }
 
 resource "aws_s3_bucket_policy" "derivatives-video" {
   bucket = aws_s3_bucket.derivatives_video.id
   policy = templatefile("templates/s3_public_read_policy.tftpl", { bucket_name : aws_s3_bucket.derivatives_video.id })
 }
-
 
 resource "aws_s3_bucket_lifecycle_configuration" "derivatives_video" {
   bucket = aws_s3_bucket.derivatives_video.id
@@ -205,9 +197,14 @@ resource "aws_s3_bucket_lifecycle_configuration" "derivatives_video" {
       storage_class   = "INTELLIGENT_TIERING"
     }
   }
-
 }
 
+resource "aws_s3_bucket_versioning" "derivatives_video" {
+  bucket = aws_s3_bucket.derivatives_video.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
 
 #
 # DZI tiles, in a public bucket. They are voluminous
@@ -247,10 +244,6 @@ resource "aws_s3_bucket" "dzi" {
     }
   }
 
-  versioning {
-    enabled = true
-  }
-
   server_side_encryption_configuration {
     rule {
       bucket_key_enabled = false
@@ -265,7 +258,6 @@ resource "aws_s3_bucket_policy" "dzi" {
   bucket = aws_s3_bucket.dzi.id
   policy = templatefile("templates/s3_public_read_policy.tftpl", { bucket_name : aws_s3_bucket.dzi.id })
 }
-
 
 resource "aws_s3_bucket_cors_configuration" "dzi" {
 
@@ -284,9 +276,7 @@ resource "aws_s3_bucket_cors_configuration" "dzi" {
     expose_headers  = []
     max_age_seconds = 43200
   }
-
 }
-
 
 resource "aws_s3_bucket_lifecycle_configuration" "dzi" {
   bucket = aws_s3_bucket.dzi.id
@@ -311,8 +301,12 @@ resource "aws_s3_bucket_lifecycle_configuration" "dzi" {
   }
 }
 
-
-
+resource "aws_s3_bucket_versioning" "dzi" {
+  bucket = aws_s3_bucket.dzi.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
 
 #
 # S3 bucket that is "mounted" on windows desktops, so staff can copy files to it, for later
@@ -332,10 +326,6 @@ resource "aws_s3_bucket" "ingest_mount" {
   }
 
 
-  versioning {
-    enabled = false
-  }
-
   server_side_encryption_configuration {
     rule {
       bucket_key_enabled = false
@@ -354,8 +344,6 @@ resource "aws_s3_bucket_public_access_block" "ingest_mount" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
-
-
 
 resource "aws_s3_bucket_cors_configuration" "ingest_mount" {
 
@@ -381,9 +369,7 @@ resource "aws_s3_bucket_cors_configuration" "ingest_mount" {
     ]
     max_age_seconds = 3000
   }
-
 }
-
 
 resource "aws_s3_bucket_lifecycle_configuration" "ingest_mount" {
   bucket = aws_s3_bucket.ingest_mount.id
@@ -409,6 +395,13 @@ resource "aws_s3_bucket_lifecycle_configuration" "ingest_mount" {
   }
 }
 
+resource "aws_s3_bucket_versioning" "ingest_mount" {
+  bucket = aws_s3_bucket.ingest_mount.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
 #
 # A bucket just for our on-demand derivatives, serves as a kind of cache, has
 # lifecycle rules to delete ones that haven't been accessed in a while.
@@ -427,11 +420,6 @@ resource "aws_s3_bucket" "ondemand_derivatives" {
     "S3-Bucket-Name" = "${local.name_prefix}-ondemand-derivatives"
   }
 
-
-  versioning {
-    enabled = false
-  }
-
   server_side_encryption_configuration {
     rule {
       bucket_key_enabled = false
@@ -441,7 +429,6 @@ resource "aws_s3_bucket" "ondemand_derivatives" {
     }
   }
 }
-
 
 resource "aws_s3_bucket_lifecycle_configuration" "ondemand_derivatives" {
   bucket = "${local.name_prefix}-ondemand-derivatives"
@@ -467,7 +454,12 @@ resource "aws_s3_bucket_lifecycle_configuration" "ondemand_derivatives" {
   }
 }
 
-
+resource "aws_s3_bucket_versioning" "ondemand_derivatives" {
+  bucket = aws_s3_bucket.ondemand_derivatives.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
 
 #
 # Original assets, as ingested, in a private bucket
@@ -513,9 +505,6 @@ resource "aws_s3_bucket" "originals" {
   #    target_prefix = "s3_server_access_${terraform.workspace}_originals/"
   # }
 
-  versioning {
-    enabled = true
-  }
 
   server_side_encryption_configuration {
     rule {
@@ -559,6 +548,12 @@ resource "aws_s3_bucket_lifecycle_configuration" "originals" {
   }
 }
 
+resource "aws_s3_bucket_versioning" "originals" {
+  bucket = aws_s3_bucket.originals.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
 
 #
 # Original VIDEO assets, as ingested, in a private bucket, separate bucket for videos.
@@ -604,11 +599,6 @@ resource "aws_s3_bucket" "originals_video" {
   #    target_prefix = "s3_server_access_${terraform.workspace}_originals_video/"
   # }
 
-  versioning {
-    enabled = true
-  }
-
-
   server_side_encryption_configuration {
     rule {
       bucket_key_enabled = false
@@ -627,7 +617,6 @@ resource "aws_s3_bucket_public_access_block" "originals_video" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
-
 
 resource "aws_s3_bucket_lifecycle_configuration" "originals_video" {
   bucket = "${local.name_prefix}-originals-video"
@@ -654,6 +643,12 @@ resource "aws_s3_bucket_lifecycle_configuration" "originals_video" {
   }
 }
 
+resource "aws_s3_bucket_versioning" "originals_video" {
+  bucket = aws_s3_bucket.originals_video.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
 
 #
 # A public bucket intended for a variety of uses. Does not have versioning turned on at present.
@@ -671,10 +666,6 @@ resource "aws_s3_bucket" "public" {
     "S3-Bucket-Name" = "${local.name_prefix}-public"
   }
 
-  versioning {
-    enabled = false
-  }
-
   server_side_encryption_configuration {
     rule {
       bucket_key_enabled = false
@@ -685,12 +676,17 @@ resource "aws_s3_bucket" "public" {
   }
 }
 
+resource "aws_s3_bucket_versioning" "public" {
+  bucket = aws_s3_bucket.public.id
+  versioning_configuration {
+    status = "Disabled"
+  }
+}
+
 resource "aws_s3_bucket_policy" "public" {
   bucket = aws_s3_bucket.public.id
   policy = templatefile("templates/s3_public_read_policy.tftpl", { bucket_name : aws_s3_bucket.public.id })
 }
-
-
 
 
 #
@@ -708,11 +704,6 @@ resource "aws_s3_bucket" "uploads" {
     "service"        = local.service_tag
     "use"            = "upload"
     "S3-Bucket-Name" = "${local.name_prefix}-uploads"
-  }
-
-
-  versioning {
-    enabled = false
   }
 
   server_side_encryption_configuration {
@@ -733,7 +724,6 @@ resource "aws_s3_bucket_public_access_block" "uploads" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
-
 
 resource "aws_s3_bucket_cors_configuration" "uploads" {
 
@@ -759,7 +749,6 @@ resource "aws_s3_bucket_cors_configuration" "uploads" {
     ]
     max_age_seconds = 3000
   }
-
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "uploads" {
@@ -785,7 +774,10 @@ resource "aws_s3_bucket_lifecycle_configuration" "uploads" {
   }
 }
 
-
+resource "aws_s3_bucket_policy" "uploads" {
+  bucket = aws_s3_bucket.uploads.id
+  policy = templatefile("templates/s3_public_read_policy.tftpl", { bucket_name : aws_s3_bucket.public.id })
+}
 
 ###
 #
@@ -809,11 +801,6 @@ resource "aws_s3_bucket" "derivatives_backup" {
     "S3-Bucket-Name" = "${local.name_prefix}-derivatives-backup"
   }
 
-
-  versioning {
-    enabled = true
-  }
-
   server_side_encryption_configuration {
     rule {
       bucket_key_enabled = false
@@ -831,7 +818,6 @@ resource "aws_s3_bucket_policy" "derivatives_backup" {
   bucket = aws_s3_bucket.derivatives_backup[0].id
   policy = templatefile("templates/s3_public_read_policy.tftpl", { bucket_name : aws_s3_bucket.derivatives_backup[0].id })
 }
-
 
 resource "aws_s3_bucket_cors_configuration" "derivatives_backup" {
 
@@ -851,9 +837,7 @@ resource "aws_s3_bucket_cors_configuration" "derivatives_backup" {
     expose_headers  = []
     max_age_seconds = 43200
   }
-
 }
-
 
 resource "aws_s3_bucket_lifecycle_configuration" "derivatives_backup" {
   count  = terraform.workspace == "production" ? 1 : 0
@@ -875,6 +859,14 @@ resource "aws_s3_bucket_lifecycle_configuration" "derivatives_backup" {
       noncurrent_days = 30
       storage_class   = "STANDARD_IA"
     }
+  }
+}
+
+resource "aws_s3_bucket_versioning" "derivatives_backup" {
+  count  = terraform.workspace == "production" ? 1 : 0
+  bucket = aws_s3_bucket.derivatives_backup[0].id
+  versioning_configuration {
+    status = "Enabled"
   }
 }
 
@@ -914,7 +906,6 @@ resource "aws_s3_bucket_policy" "dzi_backup" {
   policy = templatefile("templates/s3_public_read_policy.tftpl", { bucket_name : aws_s3_bucket.dzi_backup[0].id })
 }
 
-
 resource "aws_s3_bucket_cors_configuration" "dzi_backup" {
 
   count  = terraform.workspace == "production" ? 1 : 0
@@ -933,9 +924,7 @@ resource "aws_s3_bucket_cors_configuration" "dzi_backup" {
     expose_headers  = []
     max_age_seconds = 43200
   }
-
 }
-
 
 resource "aws_s3_bucket_lifecycle_configuration" "dzi_backup" {
   count  = terraform.workspace == "production" ? 1 : 0
@@ -972,11 +961,6 @@ resource "aws_s3_bucket" "originals_backup" {
     "S3-Bucket-Name" = "${local.name_prefix}-originals-backup"
   }
 
-
-  versioning {
-    enabled = true
-  }
-
   server_side_encryption_configuration {
     rule {
       bucket_key_enabled = false
@@ -986,7 +970,6 @@ resource "aws_s3_bucket" "originals_backup" {
     }
   }
 }
-
 
 resource "aws_s3_bucket_lifecycle_configuration" "originals_backup" {
   count  = terraform.workspace == "production" ? 1 : 0
@@ -1012,6 +995,13 @@ resource "aws_s3_bucket_lifecycle_configuration" "originals_backup" {
   }
 }
 
+resource "aws_s3_bucket_versioning" "originals_backup" {
+  count  = terraform.workspace == "production" ? 1 : 0
+  bucket = aws_s3_bucket.originals_backup[0].id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
 
 resource "aws_s3_bucket" "originals_video_backup" {
   count    = terraform.workspace == "production" ? 1 : 0
@@ -1025,9 +1015,6 @@ resource "aws_s3_bucket" "originals_video_backup" {
     "S3-Bucket-Name" = "${local.name_prefix}-originals-video-backup"
   }
 
-  versioning {
-    enabled = true
-  }
   server_side_encryption_configuration {
     rule {
       bucket_key_enabled = false
@@ -1037,7 +1024,6 @@ resource "aws_s3_bucket" "originals_video_backup" {
     }
   }
 }
-
 
 resource "aws_s3_bucket_lifecycle_configuration" "originals_video_backup" {
   count  = terraform.workspace == "production" ? 1 : 0
@@ -1060,5 +1046,13 @@ resource "aws_s3_bucket_lifecycle_configuration" "originals_video_backup" {
       noncurrent_days = 30
       storage_class   = "STANDARD_IA"
     }
+  }
+}
+
+resource "aws_s3_bucket_versioning" "originals_video_backup" {
+  count  = terraform.workspace == "production" ? 1 : 0
+  bucket = aws_s3_bucket.originals_video_backup[0].id
+  versioning_configuration {
+    status = "Enabled"
   }
 }
