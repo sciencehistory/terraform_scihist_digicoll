@@ -57,14 +57,6 @@ resource "aws_s3_bucket" "derivatives" {
     }
   }
 
-  server_side_encryption_configuration {
-    rule {
-      bucket_key_enabled = false
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
 }
 
 resource "aws_s3_bucket_policy" "derivatives" {
@@ -120,6 +112,23 @@ resource "aws_s3_bucket_versioning" "derivatives" {
   }
 }
 
+resource "aws_s3_bucket_server_side_encryption_configuration" "derivatives" {
+  bucket = aws_s3_bucket.derivatives.id
+
+  rule {
+    bucket_key_enabled = false
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+
+# DERIVATIVES ARE DONE
+# NOW DO EVERYTHING ELSE.
+# I LEFT BOILERPLATE WITH CORRECT IDS FOR EACH BUCKET
+# JUST REPLACE IT WITH THE APPROPRIATE `rule` thing from the corresponding bucket.
+
 # Video derivatives, expected to be mainly/only HLS. Set up in a separate bucket from
 # other videos for easier cost tracking. Also the method of creation/management differs.
 #
@@ -140,16 +149,6 @@ resource "aws_s3_bucket" "derivatives_video" {
     "service"        = local.service_tag
     "use"            = "derivatives"
     "S3-Bucket-Name" = "${local.name_prefix}-derivatives-video"
-  }
-
-
-  server_side_encryption_configuration {
-    rule {
-      bucket_key_enabled = false
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
   }
 }
 
@@ -206,6 +205,17 @@ resource "aws_s3_bucket_versioning" "derivatives_video" {
   }
 }
 
+resource "aws_s3_bucket_server_side_encryption_configuration" "derivatives_video" {
+  bucket = aws_s3_bucket.derivatives_video.id
+
+  rule {
+    bucket_key_enabled = false
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
 #
 # DZI tiles, in a public bucket. They are voluminous
 #
@@ -240,15 +250,6 @@ resource "aws_s3_bucket" "dzi" {
         destination {
           bucket = one(aws_s3_bucket.dzi_backup).arn
         }
-      }
-    }
-  }
-
-  server_side_encryption_configuration {
-    rule {
-      bucket_key_enabled = false
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
       }
     }
   }
@@ -308,6 +309,17 @@ resource "aws_s3_bucket_versioning" "dzi" {
   }
 }
 
+resource "aws_s3_bucket_server_side_encryption_configuration" "dzi" {
+  bucket = aws_s3_bucket.dzi.id
+
+  rule {
+    bucket_key_enabled = false
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
 #
 # S3 bucket that is "mounted" on windows desktops, so staff can copy files to it, for later
 # ingest by app.
@@ -326,14 +338,7 @@ resource "aws_s3_bucket" "ingest_mount" {
   }
 
 
-  server_side_encryption_configuration {
-    rule {
-      bucket_key_enabled = false
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
+
 }
 
 resource "aws_s3_bucket_public_access_block" "ingest_mount" {
@@ -402,6 +407,17 @@ resource "aws_s3_bucket_versioning" "ingest_mount" {
   }
 }
 
+resource "aws_s3_bucket_server_side_encryption_configuration" "ingest_mount" {
+  bucket = aws_s3_bucket.ingest_mount.id
+
+  rule {
+    bucket_key_enabled = false
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
 #
 # A bucket just for our on-demand derivatives, serves as a kind of cache, has
 # lifecycle rules to delete ones that haven't been accessed in a while.
@@ -418,15 +434,6 @@ resource "aws_s3_bucket" "ondemand_derivatives" {
     "service"        = local.service_tag
     "use"            = "cache"
     "S3-Bucket-Name" = "${local.name_prefix}-ondemand-derivatives"
-  }
-
-  server_side_encryption_configuration {
-    rule {
-      bucket_key_enabled = false
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
   }
 }
 
@@ -458,6 +465,17 @@ resource "aws_s3_bucket_versioning" "ondemand_derivatives" {
   bucket = aws_s3_bucket.ondemand_derivatives.id
   versioning_configuration {
     status = "Disabled"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "ondemand_derivatives" {
+  bucket = aws_s3_bucket.ondemand_derivatives.id
+
+  rule {
+    bucket_key_enabled = false
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
   }
 }
 
@@ -504,16 +522,6 @@ resource "aws_s3_bucket" "originals" {
   #    target_bucket = "chf-logs"
   #    target_prefix = "s3_server_access_${terraform.workspace}_originals/"
   # }
-
-
-  server_side_encryption_configuration {
-    rule {
-      bucket_key_enabled = false
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
 }
 
 resource "aws_s3_bucket_public_access_block" "originals" {
@@ -552,6 +560,17 @@ resource "aws_s3_bucket_versioning" "originals" {
   bucket = aws_s3_bucket.originals.id
   versioning_configuration {
     status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "originals" {
+  bucket = aws_s3_bucket.originals.id
+
+  rule {
+    bucket_key_enabled = false
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
   }
 }
 
@@ -598,15 +617,6 @@ resource "aws_s3_bucket" "originals_video" {
   #    target_bucket = "chf-logs"
   #    target_prefix = "s3_server_access_${terraform.workspace}_originals_video/"
   # }
-
-  server_side_encryption_configuration {
-    rule {
-      bucket_key_enabled = false
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
 }
 
 resource "aws_s3_bucket_public_access_block" "originals_video" {
@@ -650,6 +660,16 @@ resource "aws_s3_bucket_versioning" "originals_video" {
   }
 }
 
+resource "aws_s3_bucket_server_side_encryption_configuration" "originals_video" {
+  bucket = aws_s3_bucket.originals_video.id
+
+  rule {
+    bucket_key_enabled = false
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
 #
 # A public bucket intended for a variety of uses. Does not have versioning turned on at present.
 #
@@ -665,15 +685,6 @@ resource "aws_s3_bucket" "public" {
     "use"            = "general_public"
     "S3-Bucket-Name" = "${local.name_prefix}-public"
   }
-
-  server_side_encryption_configuration {
-    rule {
-      bucket_key_enabled = false
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
 }
 
 resource "aws_s3_bucket_versioning" "public" {
@@ -688,6 +699,16 @@ resource "aws_s3_bucket_policy" "public" {
   policy = templatefile("templates/s3_public_read_policy.tftpl", { bucket_name : aws_s3_bucket.public.id })
 }
 
+resource "aws_s3_bucket_server_side_encryption_configuration" "public" {
+  bucket = aws_s3_bucket.public.id
+
+  rule {
+    bucket_key_enabled = false
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
 
 #
 # A bucket to which our app's in-browser javascript uploads files to be ingested, so the
@@ -704,15 +725,6 @@ resource "aws_s3_bucket" "uploads" {
     "service"        = local.service_tag
     "use"            = "upload"
     "S3-Bucket-Name" = "${local.name_prefix}-uploads"
-  }
-
-  server_side_encryption_configuration {
-    rule {
-      bucket_key_enabled = false
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
   }
 }
 
@@ -781,6 +793,17 @@ resource "aws_s3_bucket_versioning" "uploads" {
   }
 }
 
+resource "aws_s3_bucket_server_side_encryption_configuration" "uploads" {
+  bucket = aws_s3_bucket.uploads.id
+
+  rule {
+    bucket_key_enabled = false
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
 ###
 #
 # BACKUP BUCKETS, *** only in production ***
@@ -801,15 +824,6 @@ resource "aws_s3_bucket" "derivatives_backup" {
     "service"        = local.service_tag
     "use"            = "derivatives"
     "S3-Bucket-Name" = "${local.name_prefix}-derivatives-backup"
-  }
-
-  server_side_encryption_configuration {
-    rule {
-      bucket_key_enabled = false
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
   }
 }
 
@@ -872,6 +886,19 @@ resource "aws_s3_bucket_versioning" "derivatives_backup" {
   }
 }
 
+resource "aws_s3_bucket_server_side_encryption_configuration" "derivatives_backup" {
+
+  count  = terraform.workspace == "production" ? 1 : 0
+  bucket = aws_s3_bucket.derivatives_backup[0].id
+
+  rule {
+    bucket_key_enabled = false
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
 resource "aws_s3_bucket" "dzi_backup" {
   count    = terraform.workspace == "production" ? 1 : 0
   provider = aws.backup
@@ -886,17 +913,6 @@ resource "aws_s3_bucket" "dzi_backup" {
     "service"        = "kithe"
     "use"            = "dzi"
     "S3-Bucket-Name" = "${local.name_prefix}-dzi-backup"
-  }
-
-
-
-  server_side_encryption_configuration {
-    rule {
-      bucket_key_enabled = false
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
   }
 }
 
@@ -951,6 +967,18 @@ resource "aws_s3_bucket_lifecycle_configuration" "dzi_backup" {
   }
 }
 
+resource "aws_s3_bucket_server_side_encryption_configuration" "dzi_backup" {
+  count  = terraform.workspace == "production" ? 1 : 0
+  bucket = "${local.name_prefix}-dzi-backup"
+
+  rule {
+    bucket_key_enabled = false
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
 resource "aws_s3_bucket" "originals_backup" {
   count    = terraform.workspace == "production" ? 1 : 0
   provider = aws.backup
@@ -961,15 +989,6 @@ resource "aws_s3_bucket" "originals_backup" {
     "service"        = "kithe"
     "use"            = "originals"
     "S3-Bucket-Name" = "${local.name_prefix}-originals-backup"
-  }
-
-  server_side_encryption_configuration {
-    rule {
-      bucket_key_enabled = false
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
   }
 }
 
@@ -1005,6 +1024,18 @@ resource "aws_s3_bucket_versioning" "originals_backup" {
   }
 }
 
+resource "aws_s3_bucket_server_side_encryption_configuration" "originals_backup" {
+  count  = terraform.workspace == "production" ? 1 : 0
+  bucket = aws_s3_bucket.originals_backup[0].id
+
+  rule {
+    bucket_key_enabled = false
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
 resource "aws_s3_bucket" "originals_video_backup" {
   count    = terraform.workspace == "production" ? 1 : 0
   provider = aws.backup
@@ -1015,15 +1046,6 @@ resource "aws_s3_bucket" "originals_video_backup" {
     "service"        = "kithe"
     "use"            = "originals"
     "S3-Bucket-Name" = "${local.name_prefix}-originals-video-backup"
-  }
-
-  server_side_encryption_configuration {
-    rule {
-      bucket_key_enabled = false
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
   }
 }
 
@@ -1056,5 +1078,17 @@ resource "aws_s3_bucket_versioning" "originals_video_backup" {
   bucket = aws_s3_bucket.originals_video_backup[0].id
   versioning_configuration {
     status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "originals_video_backup" {
+  count  = terraform.workspace == "production" ? 1 : 0
+  bucket = "${local.name_prefix}-originals-video-backup"
+
+  rule {
+    bucket_key_enabled = false
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
   }
 }
