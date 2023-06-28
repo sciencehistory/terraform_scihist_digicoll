@@ -123,12 +123,6 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "derivatives" {
   }
 }
 
-
-# DERIVATIVES ARE DONE
-# NOW DO EVERYTHING ELSE.
-# I LEFT BOILERPLATE WITH CORRECT IDS FOR EACH BUCKET
-# JUST REPLACE IT WITH THE APPROPRIATE `rule` thing from the corresponding bucket.
-
 # Video derivatives, expected to be mainly/only HLS. Set up in a separate bucket from
 # other videos for easier cost tracking. Also the method of creation/management differs.
 #
@@ -1083,8 +1077,7 @@ resource "aws_s3_bucket_versioning" "originals_video_backup" {
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "originals_video_backup" {
   count  = terraform.workspace == "production" ? 1 : 0
-  bucket = "${local.name_prefix}-originals-video-backup"
-
+  bucket = aws_s3_bucket.originals_video_backup[0].id
   rule {
     bucket_key_enabled = false
     apply_server_side_encryption_by_default {
