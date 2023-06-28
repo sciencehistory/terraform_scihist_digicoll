@@ -28,14 +28,6 @@ resource "aws_s3_bucket" "terraform_state" {
     enabled = true
   }
 
-  # Enable server-side encryption by default
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
 }
 
 resource "aws_s3_bucket_public_access_block" "terraform_state" {
@@ -47,6 +39,17 @@ resource "aws_s3_bucket_public_access_block" "terraform_state" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state" {
+  bucket = aws_s3_bucket.terraform_state[0].id
+  count  = terraform.workspace == "production" ? 1 : 0
+  # Enable server-side encryption by default
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
 }
 
 resource "aws_dynamodb_table" "terraform_state_locks" {
