@@ -53,7 +53,7 @@ resource "aws_s3_bucket_public_access_block" "originals" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "originals" {
-  bucket = "${local.name_prefix}-originals"
+  bucket = aws_s3_bucket.originals.id
 
   rule {
     status = "Enabled"

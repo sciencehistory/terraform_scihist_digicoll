@@ -26,7 +26,6 @@ resource "aws_s3_bucket_public_access_block" "uploads" {
 }
 
 resource "aws_s3_bucket_cors_configuration" "uploads" {
-
   bucket = aws_s3_bucket.uploads.id
 
   cors_rule {
@@ -52,7 +51,7 @@ resource "aws_s3_bucket_cors_configuration" "uploads" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "uploads" {
-  bucket = "${local.name_prefix}-uploads"
+  bucket = aws_s3_bucket.uploads.id
 
   rule {
     status = "Enabled"

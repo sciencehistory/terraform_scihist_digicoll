@@ -43,7 +43,7 @@ resource "aws_s3_bucket_cors_configuration" "derivatives_backup" {
 
 resource "aws_s3_bucket_lifecycle_configuration" "derivatives_backup" {
   count  = terraform.workspace == "production" ? 1 : 0
-  bucket = "${local.name_prefix}-derivatives-backup"
+  bucket = aws_s3_bucket.derivatives_backup[0].id
 
   rule {
     status = "Enabled"

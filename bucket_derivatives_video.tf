@@ -23,7 +23,7 @@ resource "aws_s3_bucket" "derivatives_video" {
 
 resource "aws_s3_bucket_cors_configuration" "derivatives_video" {
 
-  bucket = "${local.name_prefix}-derivatives-video"
+  bucket = aws_s3_bucket.derivatives_video.id
 
   cors_rule {
     allowed_headers = [

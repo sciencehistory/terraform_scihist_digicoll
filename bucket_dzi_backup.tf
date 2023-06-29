@@ -44,7 +44,7 @@ resource "aws_s3_bucket_cors_configuration" "dzi_backup" {
 
 resource "aws_s3_bucket_lifecycle_configuration" "dzi_backup" {
   count  = terraform.workspace == "production" ? 1 : 0
-  bucket = "${local.name_prefix}-dzi-backup"
+  bucket = aws_s3_bucket.dzi_backup[0].id
 
   rule {
     status = "Enabled"
@@ -67,7 +67,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "dzi_backup" {
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "dzi_backup" {
   count  = terraform.workspace == "production" ? 1 : 0
-  bucket = "${local.name_prefix}-dzi-backup"
+  bucket = aws_s3_bucket.dzi_backup[0].id
 
   rule {
     bucket_key_enabled = false

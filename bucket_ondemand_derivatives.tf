@@ -18,7 +18,7 @@ resource "aws_s3_bucket" "ondemand_derivatives" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "ondemand_derivatives" {
-  bucket = "${local.name_prefix}-ondemand-derivatives"
+  bucket = aws_s3_bucket.ondemand_derivatives.id
 
   rule {
     status = "Enabled"

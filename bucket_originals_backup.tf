@@ -13,8 +13,7 @@ resource "aws_s3_bucket" "originals_backup" {
 
 resource "aws_s3_bucket_lifecycle_configuration" "originals_backup" {
   count  = terraform.workspace == "production" ? 1 : 0
-  bucket = "${local.name_prefix}-originals-backup"
-
+  bucket = aws_s3_bucket.originals_backup[0].id
 
   rule {
     status = "Enabled"

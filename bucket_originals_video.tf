@@ -53,10 +53,7 @@ resource "aws_s3_bucket_public_access_block" "originals_video" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "originals_video" {
-  bucket = "${local.name_prefix}-originals-video"
-
-
-
+  bucket = aws_s3_bucket.originals_video.id
   rule {
     status = "Enabled"
     id     = "Expire previous files"
