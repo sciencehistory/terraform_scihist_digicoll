@@ -1,7 +1,7 @@
 resource "aws_s3_bucket" "derivatives_backup" {
   count    = terraform.workspace == "production" ? 1 : 0
   provider = aws.backup
-  bucket = "${local.name_prefix}-derivatives-backup"
+  bucket   = "${local.name_prefix}-derivatives-backup"
 
   lifecycle {
     prevent_destroy = true

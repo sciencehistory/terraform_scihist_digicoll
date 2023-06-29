@@ -1,6 +1,6 @@
 resource "aws_s3_bucket" "terraform_state" {
   bucket = "scihist-digicoll-terraform-state"
-  count = terraform.workspace == "production" ? 1 : 0
+  count  = terraform.workspace == "production" ? 1 : 0
   tags = {
     "service"        = local.service_tag
     "use"            = "terraform"
