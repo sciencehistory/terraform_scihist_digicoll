@@ -146,9 +146,10 @@ resource "aws_s3_bucket" "derivatives_video" {
   }
 }
 
-resource "aws_s3_bucket_cors_configuration" "derivatives_video" {
 
-  bucket = "${local.name_prefix}-derivatives-video"
+
+resource "aws_s3_bucket_cors_configuration" "derivatives_video" {
+  bucket = aws_s3_bucket.derivatives_video.id
 
   cors_rule {
     allowed_headers = [
@@ -432,7 +433,7 @@ resource "aws_s3_bucket" "ondemand_derivatives" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "ondemand_derivatives" {
-  bucket = "${local.name_prefix}-ondemand-derivatives"
+  bucket = aws_s3_bucket.ondemand_derivatives.id
 
   rule {
     status = "Enabled"
@@ -528,7 +529,7 @@ resource "aws_s3_bucket_public_access_block" "originals" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "originals" {
-  bucket = "${local.name_prefix}-originals"
+  bucket = aws_s3_bucket.originals.id
 
   rule {
     status = "Enabled"
@@ -758,7 +759,7 @@ resource "aws_s3_bucket_cors_configuration" "uploads" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "uploads" {
-  bucket = "${local.name_prefix}-uploads"
+  bucket = aws_s3_bucket.uploads.id
 
   rule {
     status = "Enabled"
@@ -851,7 +852,7 @@ resource "aws_s3_bucket_cors_configuration" "derivatives_backup" {
 
 resource "aws_s3_bucket_lifecycle_configuration" "derivatives_backup" {
   count  = terraform.workspace == "production" ? 1 : 0
-  bucket = "${local.name_prefix}-derivatives-backup"
+  bucket = aws_s3_bucket.derivatives_backup[0].id
 
   rule {
     status = "Enabled"
@@ -940,7 +941,8 @@ resource "aws_s3_bucket_cors_configuration" "dzi_backup" {
 
 resource "aws_s3_bucket_lifecycle_configuration" "dzi_backup" {
   count  = terraform.workspace == "production" ? 1 : 0
-  bucket = "${local.name_prefix}-dzi-backup"
+  bucket = aws_s3_bucket.dzi_backup[0].id
+
 
   rule {
     status = "Enabled"
@@ -963,7 +965,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "dzi_backup" {
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "dzi_backup" {
   count  = terraform.workspace == "production" ? 1 : 0
-  bucket = "${local.name_prefix}-dzi-backup"
+  bucket = aws_s3_bucket.dzi_backup[0].id
 
   rule {
     bucket_key_enabled = false
@@ -988,8 +990,7 @@ resource "aws_s3_bucket" "originals_backup" {
 
 resource "aws_s3_bucket_lifecycle_configuration" "originals_backup" {
   count  = terraform.workspace == "production" ? 1 : 0
-  bucket = "${local.name_prefix}-originals-backup"
-
+  bucket = aws_s3_bucket.originals_backup[0].id
 
   rule {
     status = "Enabled"
@@ -1045,7 +1046,7 @@ resource "aws_s3_bucket" "originals_video_backup" {
 
 resource "aws_s3_bucket_lifecycle_configuration" "originals_video_backup" {
   count  = terraform.workspace == "production" ? 1 : 0
-  bucket = "${local.name_prefix}-originals-video-backup"
+  bucket = aws_s3_bucket.originals_video_backup[0].id
 
   rule {
     status = "Enabled"
