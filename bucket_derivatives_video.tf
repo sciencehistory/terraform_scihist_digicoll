@@ -52,17 +52,17 @@ resource "aws_s3_bucket_lifecycle_configuration" "derivatives_video" {
     status = "Enabled"
     id     = "Expire previous files"
 
-    transition {
-      days = 30
+    noncurrent_version_expiration {
+      noncurrent_days = 30
     }
   }
   rule {
     status = "Enabled"
     id     = "scihist-digicoll-${terraform.workspace}-derivatives-IT-Rule"
 
-    noncurrent_version_transition {
-      noncurrent_days = 30
-      storage_class   = "INTELLIGENT_TIERING"
+    transition {
+      days          = 30
+      storage_class = "INTELLIGENT_TIERING"
     }
   }
 }
