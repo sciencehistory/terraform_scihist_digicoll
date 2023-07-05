@@ -52,8 +52,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "derivatives_video" {
     status = "Enabled"
     id     = "Expire previous files"
 
-    noncurrent_version_expiration {
-      noncurrent_days = 30
+    transition {
+      days = 30
     }
   }
   rule {

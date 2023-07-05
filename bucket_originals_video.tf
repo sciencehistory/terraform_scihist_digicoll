@@ -67,9 +67,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "originals_video" {
     status = "Enabled"
     id     = "scihist-digicoll-${terraform.workspace}-originals-video-IT-Rule"
 
-    noncurrent_version_transition {
-      noncurrent_days = 30
-      storage_class   = "INTELLIGENT_TIERING"
+    transition {
+      days          = 30
+      storage_class = "INTELLIGENT_TIERING"
     }
   }
 }

@@ -27,9 +27,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "originals_backup" {
     status = "Enabled"
     id     = "Scihist-digicoll-production-originals-backup_Lifecycle"
 
-    noncurrent_version_transition {
-      noncurrent_days = 30
-      storage_class   = "STANDARD_IA"
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
     }
   }
 }

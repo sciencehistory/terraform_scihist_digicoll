@@ -71,9 +71,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "ingest_mount" {
     status = "Enabled"
     id     = "scihist-digicoll-${terraform.workspace}-ingest-mount-IA-Rule"
 
-    noncurrent_version_transition {
-      noncurrent_days = 30
-      storage_class   = "STANDARD_IA"
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
     }
   }
 }

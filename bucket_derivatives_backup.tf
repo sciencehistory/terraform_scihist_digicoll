@@ -57,9 +57,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "derivatives_backup" {
     status = "Enabled"
     id     = "scihist-digicoll-${terraform.workspace}-derivatives-backup-IA-Rule"
 
-    noncurrent_version_transition {
-      noncurrent_days = 30
-      storage_class   = "STANDARD_IA"
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
     }
   }
 }

@@ -28,9 +28,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "originals_video_backup" {
     status = "Enabled"
     id     = "${local.name_prefix}-originals-video-backup_Lifecycle"
 
-    noncurrent_version_transition {
-      noncurrent_days = 30
-      storage_class   = "STANDARD_IA"
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
     }
   }
 }

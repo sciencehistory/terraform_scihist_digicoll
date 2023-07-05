@@ -66,9 +66,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "uploads" {
     status = "Enabled"
     id     = "scihist-digicoll-${terraform.workspace}-uploads-IA-Rule"
 
-    noncurrent_version_transition {
-      noncurrent_days = 30
-      storage_class   = "STANDARD_IA"
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
     }
   }
 }
