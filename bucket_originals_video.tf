@@ -13,7 +13,8 @@ resource "aws_s3_bucket" "originals_video" {
     # Can remove this ignore_changes after we move to AWS Provider 4.x
     ignore_changes = [
       cors_rule,
-      lifecycle_rule
+      lifecycle_rule,
+      replication_configuration
     ]
   }
 
@@ -23,31 +24,25 @@ resource "aws_s3_bucket" "originals_video" {
     "S3-Bucket-Name" = "${local.name_prefix}-originals-video"
   }
 
-  # only Enabled for production.
-  dynamic "replication_configuration" {
-    // hacky way to make this conditional, once and only once on production.
-    for_each = terraform.workspace == "production" ? [1] : []
-
-    content {
-      # we're not controlling the IAM role with terraform, so we just hardcode it for now.
-      role = "arn:aws:iam::335460257737:role/S3-Backup-Replication"
-
-      rules {
-        id       = "Backup"
-        priority = 0
-        status   = "Enabled"
-
-        destination {
-          bucket = one(aws_s3_bucket.originals_video_backup).arn
-        }
-      }
-    }
-  }
-
   # logging {
   #    target_bucket = "chf-logs"
   #    target_prefix = "s3_server_access_${terraform.workspace}_originals_video/"
   # }
+}
+
+resource "aws_s3_bucket_replication_configuration" "originals_video" {
+  count  = terraform.workspace == "production" ? 1 : 0
+  bucket = aws_s3_bucket.originals_video.id
+  # we're not controlling the IAM role with terraform, so we just hardcode it for now.
+  role = "arn:aws:iam::335460257737:role/S3-Backup-Replication"
+  rule {
+    id       = "Backup"
+    priority = 0
+    status   = "Enabled"
+    destination {
+      bucket = aws_s3_bucket.originals_video_backup[0].arn
+    }
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "originals_video" {
