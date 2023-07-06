@@ -31,8 +31,9 @@ resource "aws_s3_bucket_policy" "dzi_backup" {
 }
 
 resource "aws_s3_bucket_cors_configuration" "dzi_backup" {
-  count  = terraform.workspace == "production" ? 1 : 0
-  bucket = aws_s3_bucket.dzi_backup[0].id
+  count    = terraform.workspace == "production" ? 1 : 0
+  bucket   = aws_s3_bucket.dzi_backup[0].id
+  provider = aws.backup
 
   cors_rule {
     allowed_headers = [
@@ -50,8 +51,9 @@ resource "aws_s3_bucket_cors_configuration" "dzi_backup" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "dzi_backup" {
-  count  = terraform.workspace == "production" ? 1 : 0
-  bucket = aws_s3_bucket.dzi_backup[0].id
+  count    = terraform.workspace == "production" ? 1 : 0
+  bucket   = aws_s3_bucket.dzi_backup[0].id
+  provider = aws.backup
 
   rule {
     status = "Enabled"
@@ -73,8 +75,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "dzi_backup" {
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "dzi_backup" {
-  count  = terraform.workspace == "production" ? 1 : 0
-  bucket = aws_s3_bucket.dzi_backup[0].id
+  count    = terraform.workspace == "production" ? 1 : 0
+  bucket   = aws_s3_bucket.dzi_backup[0].id
+  provider = aws.backup
 
   rule {
     bucket_key_enabled = false
