@@ -10,6 +10,8 @@
 # using 'count'.
 #
 # If you want to deploy changes to these with terraform, you have to apply them in `production` workspace.
+#
+# The configuration for the actual s3 bucket is now in bucket_terraform_state.tf .
 
 resource "aws_dynamodb_table" "terraform_state_locks" {
   name = "scihist-digicoll-terraform-state-locks"
