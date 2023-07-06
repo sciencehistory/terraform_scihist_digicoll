@@ -66,8 +66,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "originals" {
     status = "Enabled"
     id     = "Expire previous files"
 
-    expiration {
-      days = 30
+    noncurrent_version_expiration {
+      noncurrent_days = 30
     }
   }
 

@@ -65,7 +65,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "uploads" {
     id     = "Expire files"
 
     expiration {
-      days = 30
+      days                         = 30
       expired_object_delete_marker = false
     }
   }
