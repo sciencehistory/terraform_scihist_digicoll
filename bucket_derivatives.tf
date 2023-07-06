@@ -19,26 +19,42 @@ resource "aws_s3_bucket" "derivatives" {
   }
 
   # only Enabled for production.
-  dynamic "replication_configuration" {
-    // hacky way to make this conditional, once and only once on production.
-    for_each = terraform.workspace == "production" ? [1] : []
-    content {
-      # we're not controlling the IAM role with terraform, so we just hardcode it for now.
-      role = "arn:aws:iam::335460257737:role/S3-Backup-Replication"
+  # dynamic "replication_configuration" {
+  #   // hacky way to make this conditional, once and only once on production.
+  #   for_each = terraform.workspace == "production" ? [1] : []
+  #   content {
+  #     # we're not controlling the IAM role with terraform, so we just hardcode it for now.
+  #     role = "arn:aws:iam::335460257737:role/S3-Backup-Replication"
 
-      rules {
-        id       = "Backup"
-        priority = 0
-        status   = "Enabled"
+  #     rules {
+  #       id       = "Backup"
+  #       priority = 0
+  #       status   = "Enabled"
 
-        destination {
-          bucket = one(aws_s3_bucket.derivatives_backup).arn
-        }
-      }
-    }
-  }
+  #       destination {
+  #         bucket = one(aws_s3_bucket.derivatives_backup).arn
+  #       }
+  #     }
+  #   }
+  # }
 
 }
+
+resource "aws_s3_bucket_replication_configuration" "derivatives" {
+  # only enabled for production.
+  bucket = aws_s3_bucket.derivatives.id
+  role   = "arn:aws:iam::335460257737:role/S3-Backup-Replication"
+  rule {
+    id       = "Backup"
+    priority = 0
+    status   = terraform.workspace == "production" ? "Enabled" : "Disabled"
+
+    destination {
+      bucket = one(aws_s3_bucket.derivatives_backup).arn
+    }
+  }
+}
+
 
 resource "aws_s3_bucket_policy" "derivatives" {
   bucket = aws_s3_bucket.derivatives.id
