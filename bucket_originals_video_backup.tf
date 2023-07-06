@@ -22,8 +22,9 @@ resource "aws_s3_bucket" "originals_video_backup" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "originals_video_backup" {
-  count  = terraform.workspace == "production" ? 1 : 0
-  bucket = aws_s3_bucket.originals_video_backup[0].id
+  count    = terraform.workspace == "production" ? 1 : 0
+  bucket   = aws_s3_bucket.originals_video_backup[0].id
+  provider = aws.backup
 
   rule {
     status = "Enabled"
@@ -46,16 +47,18 @@ resource "aws_s3_bucket_lifecycle_configuration" "originals_video_backup" {
 }
 
 resource "aws_s3_bucket_versioning" "originals_video_backup" {
-  count  = terraform.workspace == "production" ? 1 : 0
-  bucket = aws_s3_bucket.originals_video_backup[0].id
+  count    = terraform.workspace == "production" ? 1 : 0
+  bucket   = aws_s3_bucket.originals_video_backup[0].id
+  provider = aws.backup
   versioning_configuration {
     status = "Enabled"
   }
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "originals_video_backup" {
-  count  = terraform.workspace == "production" ? 1 : 0
-  bucket = aws_s3_bucket.originals_video_backup[0].id
+  count    = terraform.workspace == "production" ? 1 : 0
+  bucket   = aws_s3_bucket.originals_video_backup[0].id
+  provider = aws.backup
   rule {
     bucket_key_enabled = false
     apply_server_side_encryption_by_default {
