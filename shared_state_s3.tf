@@ -10,44 +10,8 @@
 # using 'count'.
 #
 # If you want to deploy changes to these with terraform, you have to apply them in `production` workspace.
-
-resource "aws_s3_bucket" "terraform_state" {
-  bucket = "scihist-digicoll-terraform-state"
-
-  count = terraform.workspace == "production" ? 1 : 0
-
-  tags = {
-    "service"        = local.service_tag
-    "use"            = "terraform"
-    "S3-Bucket-Name" = "scihist-digicoll-terraform-state"
-  }
-
-  # Enable versioning so we can see the full revision history of our
-  # state files
-  versioning {
-    enabled = true
-  }
-
-  # Enable server-side encryption by default
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
-}
-
-resource "aws_s3_bucket_public_access_block" "terraform_state" {
-  bucket = aws_s3_bucket.terraform_state[0].id
-
-  count = terraform.workspace == "production" ? 1 : 0
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-}
+#
+# The configuration for the actual s3 bucket is now in bucket_terraform_state.tf .
 
 resource "aws_dynamodb_table" "terraform_state_locks" {
   name = "scihist-digicoll-terraform-state-locks"
