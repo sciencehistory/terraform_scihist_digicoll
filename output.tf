@@ -7,7 +7,3 @@ output "RAILS_ASSET_HOST" {
 output "S3_BUCKET_DERIVATIVES_VIDEO_HOST" {
   value = aws_cloudfront_distribution.derivatives-video.domain_name
 }
-
-output "S3_BUCKET_DERIVATIVES_HOST" {
-  value = aws_cloudfront_distribution.derivatives.domain_name
-}
