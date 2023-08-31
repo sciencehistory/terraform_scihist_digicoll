@@ -8,6 +8,23 @@ ${jsonencode(
                 Resource  = "arn:aws:s3:::${bucket_name}/*"
                 Sid       = "AddPerm"
             },
+            {
+               Action    = "s3:*"
+               Condition = {
+                   NumericLessThan = {
+                        "s3:TlsVersion" = "1.2"
+                    }
+                }
+                Effect    = "Deny"
+                Principal = {
+                    AWS = "*"
+                }
+                Resource  = [
+                    "arn:aws:s3:::${bucket_name}/*",
+                    "arn:aws:s3:::${bucket_name}",
+                ]
+               Sid       = "EnforceTLSv12orHigher"
+            },
         ]
         Version   = "2012-10-17"
     }
