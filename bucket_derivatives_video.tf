@@ -12,13 +12,6 @@ resource "aws_s3_bucket" "derivatives_video" {
 
   lifecycle {
     prevent_destroy = true
-    # Workaround:
-    # See https://github.com/hashicorp/terraform-provider-aws/issues/25241
-    # Can remove this ignore_changes after we move to AWS Provider 4.x
-    ignore_changes = [
-      cors_rule,
-      lifecycle_rule
-    ]
   }
 
   tags = {
