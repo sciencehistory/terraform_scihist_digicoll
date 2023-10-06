@@ -31,6 +31,7 @@ resource "aws_s3_bucket_cors_configuration" "derivatives_video" {
     ]
     allowed_methods = [
       "GET",
+      "HEAD",
     ]
     allowed_origins = [
       "*",
