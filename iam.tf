@@ -1,8 +1,10 @@
+# aws_iam_policy.mediaconvert_dev:
 resource "aws_iam_group" "dev_users" {
   name = "dev_users"
   path = "/"
 }
 
+# aws_iam_policy.mediaconvert_dev:
 resource "aws_iam_group_membership" "dev_users_membership" {
   name = "dev_users_membership"
 
@@ -14,6 +16,7 @@ resource "aws_iam_group_membership" "dev_users_membership" {
   group = aws_iam_group.dev_users.name
 }
 
+# aws_iam_policy.mediaconvert_dev:
 resource "aws_iam_user" "eddie_dev" {
   name = "eddie_dev"
   path = "/"
@@ -25,13 +28,13 @@ resource "aws_iam_user" "eddie_dev" {
   }
 }
 
+# aws_iam_policy.mediaconvert_dev:
 resource "aws_iam_user" "jrochkind_dev" {
   name     = "jrochkind_dev"
   path     = "/"
   tags     = {}
   tags_all = {}
 }
-
 
 # aws_iam_policy.mediaconvert_dev:
 resource "aws_iam_policy" "mediaconvert_dev" {
@@ -66,7 +69,6 @@ resource "aws_iam_group_policy_attachment" "dev_users_mediaconvert_dev" {
   group      = aws_iam_group.dev_users.name
   policy_arn = aws_iam_policy.mediaconvert_dev.arn
 }
-
 
 # aws_iam_policy.read_backups:
 resource "aws_iam_policy" "read_backups" {
@@ -119,7 +121,6 @@ resource "aws_iam_group_policy_attachment" "dev_users_read_backups" {
   group      = aws_iam_group.dev_users.name
   policy_arn = aws_iam_policy.read_backups.arn
 }
-
 
 # aws_iam_policy.read_production:
 resource "aws_iam_policy" "read_production" {
@@ -179,7 +180,6 @@ resource "aws_iam_group_policy_attachment" "dev_users_read_production" {
   policy_arn = aws_iam_policy.read_production.arn
 }
 
-
 # aws_iam_policy.write_dev:
 resource "aws_iam_policy" "write_dev" {
   description = "Allows the dev_users group full access to dev."
@@ -214,7 +214,6 @@ resource "aws_iam_policy" "write_dev" {
     "write" = ""
   }
 }
-
 
 # aws_iam_group_policy_attachment.dev_users_mediaconvert_dev:
 resource "aws_iam_group_policy_attachment" "dev_users_write_dev" {
@@ -269,13 +268,11 @@ resource "aws_iam_policy" "write_staging" {
   }
 }
 
-
 # aws_iam_group_policy_attachment.dev_users_mediaconvert_dev:
 resource "aws_iam_group_policy_attachment" "dev_users_write_staging" {
   group      = aws_iam_group.dev_users.name
   policy_arn = aws_iam_policy.write_staging.arn
 }
-
 
 # aws_iam_policy.AmazonEC2ReadOnlyAccess:
 resource "aws_iam_policy" "AmazonEC2ReadOnlyAccess" {
@@ -316,7 +313,6 @@ resource "aws_iam_policy" "AmazonEC2ReadOnlyAccess" {
     tags        = {}
     tags_all    = {}
 }
-
 
 # aws_iam_group_policy_attachment.dev_users_mediaconvert_dev:
 resource "aws_iam_group_policy_attachment" "dev_users_AmazonEC2ReadOnlyAccess" {
