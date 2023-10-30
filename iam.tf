@@ -1,10 +1,12 @@
-# aws_iam_policy.mediaconvert_dev:
+# This user group provides the development version of the app access to the AWS services it needs, and nothing else:
+# aws_iam_group.dev_users:
 resource "aws_iam_group" "dev_users" {
   name = "dev_users"
   path = "/"
 }
 
-# aws_iam_policy.mediaconvert_dev:
+# One user for each developer:
+# aws_iam_group_membership.dev_users_membership:
 resource "aws_iam_group_membership" "dev_users_membership" {
   name = "dev_users_membership"
 
@@ -16,7 +18,7 @@ resource "aws_iam_group_membership" "dev_users_membership" {
   group = aws_iam_group.dev_users.name
 }
 
-# aws_iam_policy.mediaconvert_dev:
+# aws_iam_user.eddie_dev:
 resource "aws_iam_user" "eddie_dev" {
   name = "eddie_dev"
   path = "/"
@@ -28,7 +30,7 @@ resource "aws_iam_user" "eddie_dev" {
   }
 }
 
-# aws_iam_policy.mediaconvert_dev:
+# aws_iam_user.jrochkind_dev:
 resource "aws_iam_user" "jrochkind_dev" {
   name     = "jrochkind_dev"
   path     = "/"
@@ -36,6 +38,7 @@ resource "aws_iam_user" "jrochkind_dev" {
   tags_all = {}
 }
 
+# Allows the dev app to kick off mediaconvert jobs:
 # aws_iam_policy.mediaconvert_dev:
 resource "aws_iam_policy" "mediaconvert_dev" {
   description = "Ability to start mediaconvert jobs, with dev mediaconvert role"
@@ -70,6 +73,7 @@ resource "aws_iam_group_policy_attachment" "dev_users_mediaconvert_dev" {
   policy_arn = aws_iam_policy.mediaconvert_dev.arn
 }
 
+# Read-only access to backup buckets
 # aws_iam_policy.read_backups:
 resource "aws_iam_policy" "read_backups" {
   description = "Allows the dev_users group read-only access to backups."
@@ -116,12 +120,13 @@ resource "aws_iam_policy" "read_backups" {
   }
 }
 
-# aws_iam_group_policy_attachment.dev_users_mediaconvert_dev:
+# aws_iam_group_policy_attachment.dev_users_read_backups:
 resource "aws_iam_group_policy_attachment" "dev_users_read_backups" {
   group      = aws_iam_group.dev_users.name
   policy_arn = aws_iam_policy.read_backups.arn
 }
 
+# Read-only access to production buckets
 # aws_iam_policy.read_production:
 resource "aws_iam_policy" "read_production" {
   description = "Allows the dev_users group read-only access to production."
@@ -174,12 +179,13 @@ resource "aws_iam_policy" "read_production" {
   }
 }
 
-# aws_iam_group_policy_attachment.dev_users_mediaconvert_dev:
+# aws_iam_group_policy_attachment.dev_users_read_production:
 resource "aws_iam_group_policy_attachment" "dev_users_read_production" {
   group      = aws_iam_group.dev_users.name
   policy_arn = aws_iam_policy.read_production.arn
 }
 
+# Full access to development buckets
 # aws_iam_policy.write_dev:
 resource "aws_iam_policy" "write_dev" {
   description = "Allows the dev_users group full access to dev."
@@ -215,12 +221,13 @@ resource "aws_iam_policy" "write_dev" {
   }
 }
 
-# aws_iam_group_policy_attachment.dev_users_mediaconvert_dev:
+# aws_iam_group_policy_attachment.dev_users_write_dev:
 resource "aws_iam_group_policy_attachment" "dev_users_write_dev" {
   group      = aws_iam_group.dev_users.name
   policy_arn = aws_iam_policy.write_dev.arn
 }
 
+# Full access to staging buckets
 # aws_iam_policy.write_staging:
 resource "aws_iam_policy" "write_staging" {
   description = "Allows the dev_users group full access to staging."
@@ -268,54 +275,8 @@ resource "aws_iam_policy" "write_staging" {
   }
 }
 
-# aws_iam_group_policy_attachment.dev_users_mediaconvert_dev:
+# aws_iam_group_policy_attachment.dev_users_write_staging:
 resource "aws_iam_group_policy_attachment" "dev_users_write_staging" {
   group      = aws_iam_group.dev_users.name
   policy_arn = aws_iam_policy.write_staging.arn
-}
-
-# aws_iam_policy.AmazonEC2ReadOnlyAccess:
-resource "aws_iam_policy" "AmazonEC2ReadOnlyAccess" {
-    description = "Provides read only access to Amazon EC2 via the AWS Management Console."
-    name        = "AmazonEC2ReadOnlyAccess"
-    path        = "/"
-    policy      = jsonencode(
-        {
-            Statement = [
-                {
-                    Action   = "ec2:Describe*"
-                    Effect   = "Allow"
-                    Resource = "*"
-                },
-                {
-                    Action   = "elasticloadbalancing:Describe*"
-                    Effect   = "Allow"
-                    Resource = "*"
-                },
-                {
-                    Action   = [
-                        "cloudwatch:ListMetrics",
-                        "cloudwatch:GetMetricStatistics",
-                        "cloudwatch:Describe*",
-                    ]
-                    Effect   = "Allow"
-                    Resource = "*"
-                },
-                {
-                    Action   = "autoscaling:Describe*"
-                    Effect   = "Allow"
-                    Resource = "*"
-                },
-            ]
-            Version   = "2012-10-17"
-        }
-    )
-    tags        = {}
-    tags_all    = {}
-}
-
-# aws_iam_group_policy_attachment.dev_users_mediaconvert_dev:
-resource "aws_iam_group_policy_attachment" "dev_users_AmazonEC2ReadOnlyAccess" {
-  group      = aws_iam_group.dev_users.name
-  policy_arn = aws_iam_policy.AmazonEC2ReadOnlyAccess.arn
 }
