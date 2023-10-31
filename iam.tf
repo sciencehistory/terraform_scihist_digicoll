@@ -38,7 +38,7 @@ resource "aws_iam_user" "jrochkind_dev" {
   tags_all = {}
 }
 
-# Allows the dev app to kick off mediaconvert jobs:
+# Access to start mediaconvert jobs:
 # aws_iam_policy.mediaconvert_dev:
 resource "aws_iam_policy" "mediaconvert_dev" {
   description = "Ability to start mediaconvert jobs, with dev mediaconvert role"
