@@ -69,7 +69,7 @@ resource "aws_iam_role" "scihist-digicoll-staging-MediaConvertRole" {
   description           = "Allows MediaConvert service to call S3 APIs and API Gateway on your behalf. STAGING"
   force_detach_policies = false
   managed_policy_arns = [
-    "arn:aws:iam::335460257737:policy/S3_kithe_staging",
+    aws_iam_policy.S3_kithe_staging.arn,
     "arn:aws:iam::aws:policy/AmazonAPIGatewayInvokeFullAccess",
   ]
   max_session_duration = 3600
@@ -99,7 +99,7 @@ resource "aws_iam_role" "scihist-digicoll-production-MediaConvertRole" {
   description           = "Allows MediaConvert service to call S3 APIs and API Gateway on your behalf. PRODUCTION"
   force_detach_policies = false
   managed_policy_arns = [
-    "arn:aws:iam::335460257737:policy/S3_kithe_production",
+    aws_iam_policy.S3_kithe_production.arn,
     "arn:aws:iam::aws:policy/AmazonAPIGatewayInvokeFullAccess",
   ]
   max_session_duration = 3600
