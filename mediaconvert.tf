@@ -51,6 +51,7 @@ resource "aws_iam_role" "scihist-digicoll-DEV-MediaConvertRole" {
 
 # aws_iam_role.scihist-digicoll-staging-MediaConvertRole:
 resource "aws_iam_role" "scihist-digicoll-staging-MediaConvertRole" {
+  count    = terraform.workspace == "staging" ? 1 : 0
   assume_role_policy = jsonencode(
     {
       Statement = [
@@ -69,7 +70,7 @@ resource "aws_iam_role" "scihist-digicoll-staging-MediaConvertRole" {
   description           = "Allows MediaConvert service to call S3 APIs and API Gateway on your behalf. STAGING"
   force_detach_policies = false
   managed_policy_arns = [
-    aws_iam_policy.S3_kithe_staging.arn,
+    aws_iam_policy.S3_kithe_staging[0].arn,
     "arn:aws:iam::aws:policy/AmazonAPIGatewayInvokeFullAccess",
   ]
   max_session_duration = 3600
@@ -81,6 +82,7 @@ resource "aws_iam_role" "scihist-digicoll-staging-MediaConvertRole" {
 
 # aws_iam_role.scihist-digicoll-production-MediaConvertRole:
 resource "aws_iam_role" "scihist-digicoll-production-MediaConvertRole" {
+  count    = terraform.workspace == "production" ? 1 : 0
   assume_role_policy = jsonencode(
     {
       Statement = [
@@ -99,7 +101,7 @@ resource "aws_iam_role" "scihist-digicoll-production-MediaConvertRole" {
   description           = "Allows MediaConvert service to call S3 APIs and API Gateway on your behalf. PRODUCTION"
   force_detach_policies = false
   managed_policy_arns = [
-    aws_iam_policy.S3_kithe_production.arn,
+    aws_iam_policy.S3_kithe_production[0].arn,
     "arn:aws:iam::aws:policy/AmazonAPIGatewayInvokeFullAccess",
   ]
   max_session_duration = 3600
