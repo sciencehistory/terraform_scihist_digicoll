@@ -19,7 +19,7 @@ resource "aws_s3_bucket" "dzi" {
 resource "aws_s3_bucket_replication_configuration" "dzi" {
   count  = terraform.workspace == "production" ? 1 : 0
   bucket = aws_s3_bucket.dzi.id
-  role = aws_iam_role.S3-Backup-Replication.arn
+  role   = aws_iam_role.S3-Backup-Replication.arn
   rule {
     id       = "Backup"
     priority = 0
