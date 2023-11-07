@@ -26,7 +26,8 @@ resource "aws_s3_bucket" "originals" {
 resource "aws_s3_bucket_replication_configuration" "originals" {
   count  = terraform.workspace == "production" ? 1 : 0
   bucket = aws_s3_bucket.originals.id
-  role   = aws_iam_role.S3-Backup-Replication.arn
+  # we're not controlling the IAM role with terraform, so we just hardcode it for now.
+  role = "arn:aws:iam::335460257737:role/S3-Backup-Replication"
   rule {
     id       = "Backup"
     priority = 0
