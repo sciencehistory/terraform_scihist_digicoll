@@ -1,5 +1,5 @@
-# aws_iam_role.scihist-digicoll-DEV-MediaConvertRole:
-resource "aws_iam_role" "scihist-digicoll-DEV-MediaConvertRole" {
+# aws_iam_role.dev_mediaconvert_role:
+resource "aws_iam_role" "dev_mediaconvert_role" {
   assume_role_policy = jsonencode(
     {
       Statement = [
@@ -49,8 +49,8 @@ resource "aws_iam_role" "scihist-digicoll-DEV-MediaConvertRole" {
   }
 }
 
-# aws_iam_role.scihist-digicoll-staging-MediaConvertRole:
-resource "aws_iam_role" "scihist-digicoll-staging-MediaConvertRole" {
+# aws_iam_role.staging_mediaconvert_role:
+resource "aws_iam_role" "staging_mediaconvert_role" {
   count = terraform.workspace == "staging" ? 1 : 0
   assume_role_policy = jsonencode(
     {
@@ -80,8 +80,8 @@ resource "aws_iam_role" "scihist-digicoll-staging-MediaConvertRole" {
   tags_all             = {}
 }
 
-# aws_iam_role.scihist-digicoll-production-MediaConvertRole:
-resource "aws_iam_role" "scihist-digicoll-production-MediaConvertRole" {
+# aws_iam_role.production_mediaconvert_role:
+resource "aws_iam_role" "production_mediaconvert_role" {
   count = terraform.workspace == "production" ? 1 : 0
   assume_role_policy = jsonencode(
     {
