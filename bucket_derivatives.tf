@@ -15,7 +15,7 @@ resource "aws_s3_bucket" "derivatives" {
 resource "aws_s3_bucket_replication_configuration" "derivatives" {
   count  = terraform.workspace == "production" ? 1 : 0
   bucket = aws_s3_bucket.derivatives.id
-  role   = aws_iam_role.S3-Backup-Replication.arn
+  role   = aws_iam_role.S3-Backup-Replication[0].arn
   rule {
     id       = "Backup"
     priority = 0

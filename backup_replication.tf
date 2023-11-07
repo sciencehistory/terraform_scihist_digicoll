@@ -2,6 +2,7 @@
 # terraform import aws_iam_role.S3-Backup-Replication S3-Backup-Replication
 # aws_iam_role.S3-Backup-Replication:
 resource "aws_iam_role" "S3-Backup-Replication" {
+  count = terraform.workspace == "production" ? 1 : 0
   assume_role_policy = jsonencode(
     {
       Statement = [
@@ -19,10 +20,10 @@ resource "aws_iam_role" "S3-Backup-Replication" {
   description           = "Replication role for backing up data between thumbnail bucket in US-EAST and backup bucket in US-WEST. Does not replicate delete commands, so breaks the normal cross-region replication rule there. Deletes must be done manually."
   force_detach_policies = false
   managed_policy_arns = [
-    aws_iam_policy.replicate_derivatives.arn,
-    aws_iam_policy.replicate_dzi.arn,
-    aws_iam_policy.replicate_originals.arn,
-    aws_iam_policy.replicate_originals_video.arn
+    aws_iam_policy.replicate_derivatives[0].arn,
+    aws_iam_policy.replicate_dzi[0].arn,
+    aws_iam_policy.replicate_originals[0].arn,
+    aws_iam_policy.replicate_originals_video[0].arn
   ]
   max_session_duration = 3600
   name                 = "S3-Backup-Replication"
@@ -35,6 +36,7 @@ resource "aws_iam_role" "S3-Backup-Replication" {
 #  terraform import aws_iam_policy.replicate_originals_video arn:aws:iam::335460257737:policy/replicate_originals_video
 # aws_iam_policy.replicate_originals_video:
 resource "aws_iam_policy" "replicate_originals_video" {
+  count       = terraform.workspace == "production" ? 1 : 0
   description = "Cross-region replication for originals_video"
   name        = "replicate_originals_video"
   path        = "/"
@@ -74,6 +76,7 @@ resource "aws_iam_policy" "replicate_originals_video" {
 # terraform import aws_iam_policy.replicate_originals arn:aws:iam::335460257737:policy/replicate_originals
 # aws_iam_policy.replicate_originals:
 resource "aws_iam_policy" "replicate_originals" {
+  count       = terraform.workspace == "production" ? 1 : 0
   description = "Cross-region replication for originals"
   name        = "replicate_originals"
   path        = "/"
@@ -121,6 +124,7 @@ resource "aws_iam_policy" "replicate_originals" {
 
 # aws_iam_policy.replicate_dzi:
 resource "aws_iam_policy" "replicate_dzi" {
+  count       = terraform.workspace == "production" ? 1 : 0
   description = "Cross-region replication for dzi"
   name        = "replicate_dzi"
   path        = "/"
@@ -159,6 +163,7 @@ resource "aws_iam_policy" "replicate_dzi" {
 # # terraform import aws_iam_policy.replicate_derivatives arn:aws:iam::335460257737:policy/replicate_derivatives
 # aws_iam_policy.replicate_derivatives:
 resource "aws_iam_policy" "replicate_derivatives" {
+  count       = terraform.workspace == "production" ? 1 : 0
   description = "Cross-region replication for derivatives"
   name        = "replicate_derivatives"
   path        = "/"
