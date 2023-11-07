@@ -1,5 +1,3 @@
-# Replication:
-# terraform import aws_iam_role.S3-Backup-Replication S3-Backup-Replication
 # aws_iam_role.S3-Backup-Replication:
 resource "aws_iam_role" "S3-Backup-Replication" {
   count = terraform.workspace == "production" ? 1 : 0
@@ -33,7 +31,6 @@ resource "aws_iam_role" "S3-Backup-Replication" {
 }
 
 
-#  terraform import aws_iam_policy.replicate_originals_video arn:aws:iam::335460257737:policy/replicate_originals_video
 # aws_iam_policy.replicate_originals_video:
 resource "aws_iam_policy" "replicate_originals_video" {
   count       = terraform.workspace == "production" ? 1 : 0
@@ -50,8 +47,8 @@ resource "aws_iam_policy" "replicate_originals_video" {
           ]
           Effect = "Allow"
           Resource = [
-            "arn:aws:s3:::scihist-digicoll-production-originals-video",
-            "arn:aws:s3:::scihist-digicoll-production-originals-video/*",
+            "${aws_s3_bucket.originals_video.arn}",
+            "${aws_s3_bucket.originals_video.arn}/*",
           ]
         },
         {
@@ -62,7 +59,7 @@ resource "aws_iam_policy" "replicate_originals_video" {
             "s3:GetObjectVersionTagging",
           ]
           Effect   = "Allow"
-          Resource = "arn:aws:s3:::scihist-digicoll-production-originals-video-backup/*"
+          Resource = "${aws_s3_bucket.originals_video_backup[0].arn}/*"
         },
       ]
       Version = "2012-10-17"
@@ -72,8 +69,6 @@ resource "aws_iam_policy" "replicate_originals_video" {
   tags_all = {}
 }
 
-
-# terraform import aws_iam_policy.replicate_originals arn:aws:iam::335460257737:policy/replicate_originals
 # aws_iam_policy.replicate_originals:
 resource "aws_iam_policy" "replicate_originals" {
   count       = terraform.workspace == "production" ? 1 : 0
@@ -90,12 +85,12 @@ resource "aws_iam_policy" "replicate_originals" {
           ]
           Effect = "Allow"
           Resource = [
-            "arn:aws:s3:::scihist-digicoll-production-originals",
-            "arn:aws:s3:::scihist-digicoll-production-originals/*",
-            "arn:aws:s3:::scihist-digicoll-production-dzi",
-            "arn:aws:s3:::scihist-digicoll-production-dzi/*",
-            "arn:aws:s3:::scihist-digicoll-production-derivatives",
-            "arn:aws:s3:::scihist-digicoll-production-derivatives/*",
+            "${aws_s3_bucket.originals.arn}",
+            "${aws_s3_bucket.originals.arn}/*",
+            "${aws_s3_bucket.dzi.arn}",
+            "${aws_s3_bucket.dzi.arn}/*",
+            "${aws_s3_bucket.derivatives.arn}",
+            "${aws_s3_bucket.derivatives.arn}/*",
           ]
         },
         {
@@ -107,9 +102,9 @@ resource "aws_iam_policy" "replicate_originals" {
           ]
           Effect = "Allow"
           Resource = [
-            "arn:aws:s3:::scihist-digicoll-production-originals-backup/*",
-            "arn:aws:s3:::scihist-digicoll-production-dzi-backup/*",
-            "arn:aws:s3:::scihist-digicoll-production-derivatives-backup/*",
+            "${aws_s3_bucket.originals_backup[0].arn}/*",
+            "${aws_s3_bucket.dzi_backup[0].arn}/*",
+            "${aws_s3_bucket.derivatives_backup[0].arn}/*",
           ]
         },
       ]
@@ -119,8 +114,6 @@ resource "aws_iam_policy" "replicate_originals" {
   tags     = {}
   tags_all = {}
 }
-
-# terraform import aws_iam_policy.replicate_dzi arn:aws:iam::335460257737:policy/replicate_dzi
 
 # aws_iam_policy.replicate_dzi:
 resource "aws_iam_policy" "replicate_dzi" {
@@ -138,8 +131,8 @@ resource "aws_iam_policy" "replicate_dzi" {
           ]
           Effect = "Allow"
           Resource = [
-            "arn:aws:s3:::scihist-digicoll-production-dzi",
-            "arn:aws:s3:::scihist-digicoll-production-dzi/*",
+            aws_s3_bucket.dzi.arn,
+            "${aws_s3_bucket.dzi.arn}/*",
           ]
         },
         {
@@ -150,7 +143,7 @@ resource "aws_iam_policy" "replicate_dzi" {
             "s3:GetObjectVersionTagging",
           ]
           Effect   = "Allow"
-          Resource = "arn:aws:s3:::scihist-digicoll-production-dzi-backup/*"
+          Resource = "${aws_s3_bucket.dzi_backup[0].arn}/*"
         },
       ]
       Version = "2012-10-17"
@@ -160,7 +153,6 @@ resource "aws_iam_policy" "replicate_dzi" {
   tags_all = {}
 }
 
-# # terraform import aws_iam_policy.replicate_derivatives arn:aws:iam::335460257737:policy/replicate_derivatives
 # aws_iam_policy.replicate_derivatives:
 resource "aws_iam_policy" "replicate_derivatives" {
   count       = terraform.workspace == "production" ? 1 : 0
@@ -177,8 +169,8 @@ resource "aws_iam_policy" "replicate_derivatives" {
           ]
           Effect = "Allow"
           Resource = [
-            "arn:aws:s3:::scihist-digicoll-production-derivatives",
-            "arn:aws:s3:::scihist-digicoll-production-derivatives/*",
+            "${aws_s3_bucket.derivatives.arn}",
+            "${aws_s3_bucket.derivatives.arn}/*",
           ]
         },
         {
@@ -189,7 +181,7 @@ resource "aws_iam_policy" "replicate_derivatives" {
             "s3:GetObjectVersionTagging",
           ]
           Effect   = "Allow"
-          Resource = "arn:aws:s3:::scihist-digicoll-production-derivatives-backup/*"
+          Resource = "${aws_s3_bucket.derivatives_backup[0].arn}/*"
         },
       ]
       Version = "2012-10-17"
