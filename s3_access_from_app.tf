@@ -1,7 +1,7 @@
 # terraform import aws_iam_policy.S3_kithe_production arn:aws:iam::335460257737:policy/S3_kithe_production
 # aws_iam_policy.S3_kithe_production:
 resource "aws_iam_policy" "S3_kithe_production" {
-  count    = terraform.workspace == "production" ? 1 : 0
+  count       = terraform.workspace == "production" ? 1 : 0
   description = "Production access for scihist_digicoll application. Does not include backup access."
   name        = "S3_kithe_production"
   path        = "/"
@@ -50,7 +50,7 @@ resource "aws_iam_policy" "S3_kithe_production" {
 # terraform import aws_iam_policy.S3_kithe_staging arn:aws:iam::335460257737:policy/S3_kithe_staging
 # aws_iam_policy.S3_kithe_staging:
 resource "aws_iam_policy" "S3_kithe_staging" {
-  count    = terraform.workspace == "staging" ? 1 : 0
+  count       = terraform.workspace == "staging" ? 1 : 0
   description = "Access to all Kithe buckets in S3 for staging"
   name        = "S3_kithe_staging"
   path        = "/"

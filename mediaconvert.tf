@@ -51,7 +51,7 @@ resource "aws_iam_role" "scihist-digicoll-DEV-MediaConvertRole" {
 
 # aws_iam_role.scihist-digicoll-staging-MediaConvertRole:
 resource "aws_iam_role" "scihist-digicoll-staging-MediaConvertRole" {
-  count    = terraform.workspace == "staging" ? 1 : 0
+  count = terraform.workspace == "staging" ? 1 : 0
   assume_role_policy = jsonencode(
     {
       Statement = [
@@ -82,7 +82,7 @@ resource "aws_iam_role" "scihist-digicoll-staging-MediaConvertRole" {
 
 # aws_iam_role.scihist-digicoll-production-MediaConvertRole:
 resource "aws_iam_role" "scihist-digicoll-production-MediaConvertRole" {
-  count    = terraform.workspace == "production" ? 1 : 0
+  count = terraform.workspace == "production" ? 1 : 0
   assume_role_policy = jsonencode(
     {
       Statement = [
