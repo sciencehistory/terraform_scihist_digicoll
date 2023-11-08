@@ -1,6 +1,8 @@
-# terraform import aws_iam_policy.S3_kithe_production arn:aws:iam::335460257737:policy/S3_kithe_production
-# aws_iam_policy.S3_kithe_production:
-resource "aws_iam_policy" "S3_kithe_production" {
+# These two policies govern access to S3
+# from the production and staging apps, respectively.
+
+# aws_iam_policy.bucket_access_from_app_production:
+resource "aws_iam_policy" "bucket_access_from_app_production" {
   count       = terraform.workspace == "production" ? 1 : 0
   description = "Production access for scihist_digicoll application. Does not include backup access."
   name        = "S3_kithe_production"
@@ -51,9 +53,11 @@ resource "aws_iam_policy" "S3_kithe_production" {
   tags_all = {}
 }
 
-# terraform import aws_iam_policy.S3_kithe_staging arn:aws:iam::335460257737:policy/S3_kithe_staging
-# aws_iam_policy.S3_kithe_staging:
-resource "aws_iam_policy" "S3_kithe_staging" {
+# This is similar to the above, but without the
+# backup buckets.
+
+# aws_iam_policy.bucket_access_from_app_staging:
+resource "aws_iam_policy" "bucket_access_from_app_staging" {
   count       = terraform.workspace == "staging" ? 1 : 0
   description = "Access to all Kithe buckets in S3 for staging"
   name        = "S3_kithe_staging"

@@ -1,3 +1,8 @@
+# These three roles allow the Mediaconvert service
+# (which we use to make derivatives for video files)
+# to call s3 services on your behalf,
+# in dev, staging and production respectively.
+
 # aws_iam_role.dev_mediaconvert_role:
 resource "aws_iam_role" "dev_mediaconvert_role" {
   assume_role_policy = jsonencode(
@@ -70,7 +75,7 @@ resource "aws_iam_role" "staging_mediaconvert_role" {
   description           = "Allows MediaConvert service to call S3 APIs and API Gateway on your behalf. STAGING"
   force_detach_policies = false
   managed_policy_arns = [
-    aws_iam_policy.S3_kithe_staging[0].arn,
+    aws_iam_policy.bucket_access_from_app_staging[0].arn,
     "arn:aws:iam::aws:policy/AmazonAPIGatewayInvokeFullAccess",
   ]
   max_session_duration = 3600
@@ -101,7 +106,7 @@ resource "aws_iam_role" "production_mediaconvert_role" {
   description           = "Allows MediaConvert service to call S3 APIs and API Gateway on your behalf. PRODUCTION"
   force_detach_policies = false
   managed_policy_arns = [
-    aws_iam_policy.S3_kithe_production[0].arn,
+    aws_iam_policy.bucket_access_from_app_production[0].arn,
     "arn:aws:iam::aws:policy/AmazonAPIGatewayInvokeFullAccess",
   ]
   max_session_duration = 3600
