@@ -38,35 +38,6 @@ resource "aws_iam_user" "jrochkind_dev" {
   tags_all = {}
 }
 
-# Access to start mediaconvert jobs:
-# aws_iam_policy.mediaconvert_dev:
-resource "aws_iam_policy" "mediaconvert_dev" {
-  description = "Ability to start mediaconvert jobs, with dev mediaconvert role"
-  name        = "mediaconvert_dev"
-  path        = "/"
-  policy = jsonencode(
-    {
-      Statement = [
-        {
-          Action   = "mediaconvert:*"
-          Effect   = "Allow"
-          Resource = "*"
-          Sid      = "mediaconvertActions"
-        },
-        {
-          Action   = "iam:PassRole"
-          Effect   = "Allow"
-          Resource = "arn:aws:iam::335460257737:role/scihist-digicoll-DEV-MediaConvertRole"
-          Sid      = "iamPassRole"
-        },
-      ]
-      Version = "2012-10-17"
-    }
-  )
-  tags     = {}
-  tags_all = {}
-}
-
 # aws_iam_group_policy_attachment.dev_users_mediaconvert_dev:
 resource "aws_iam_group_policy_attachment" "dev_users_mediaconvert_dev" {
   group      = aws_iam_group.dev_users.name
