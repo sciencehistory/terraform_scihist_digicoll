@@ -1,3 +1,8 @@
+# Contains groups, users and policies that give developers
+# access to everything they need to develop the app.
+# Note that the policy for the Mediaconvert service is
+# in mediaconvert.tf, along with its staging and production counterparts.
+
 # This user group provides the development version of the app access to the AWS services it needs, and nothing else:
 # aws_iam_group.dev_users:
 resource "aws_iam_group" "dev_users" {
@@ -34,35 +39,6 @@ resource "aws_iam_user" "eddie_dev" {
 resource "aws_iam_user" "jrochkind_dev" {
   name     = "jrochkind_dev"
   path     = "/"
-  tags     = {}
-  tags_all = {}
-}
-
-# Access to start mediaconvert jobs:
-# aws_iam_policy.mediaconvert_dev:
-resource "aws_iam_policy" "mediaconvert_dev" {
-  description = "Ability to start mediaconvert jobs, with dev mediaconvert role"
-  name        = "mediaconvert_dev"
-  path        = "/"
-  policy = jsonencode(
-    {
-      Statement = [
-        {
-          Action   = "mediaconvert:*"
-          Effect   = "Allow"
-          Resource = "*"
-          Sid      = "mediaconvertActions"
-        },
-        {
-          Action   = "iam:PassRole"
-          Effect   = "Allow"
-          Resource = "arn:aws:iam::335460257737:role/scihist-digicoll-DEV-MediaConvertRole"
-          Sid      = "iamPassRole"
-        },
-      ]
-      Version = "2012-10-17"
-    }
-  )
   tags     = {}
   tags_all = {}
 }
