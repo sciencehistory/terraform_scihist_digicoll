@@ -1,5 +1,5 @@
-# aws_iam_role.S3-Backup-Replication:
-resource "aws_iam_role" "S3-Backup-Replication" {
+# aws_iam_role.replication:
+resource "aws_iam_role" "replication" {
   count = terraform.workspace == "production" ? 1 : 0
   assume_role_policy = jsonencode(
     {

@@ -25,7 +25,7 @@ resource "aws_s3_bucket" "originals_video" {
 resource "aws_s3_bucket_replication_configuration" "originals_video" {
   count  = terraform.workspace == "production" ? 1 : 0
   bucket = aws_s3_bucket.originals_video.id
-  role   = aws_iam_role.S3-Backup-Replication[0].arn
+  role   = aws_iam_role.replication[0].arn
   rule {
     id       = "Backup"
     priority = 0
