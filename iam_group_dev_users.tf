@@ -18,25 +18,6 @@ resource "aws_iam_group_membership" "dev_users_membership" {
   group = aws_iam_group.dev_users.name
 }
 
-# aws_iam_user.eddie_dev:
-resource "aws_iam_user" "eddie_dev" {
-  name = "eddie_dev"
-  path = "/"
-  tags = {
-    "description" = "The development version of schihist_digicoll_dev on eddie s laptop uses this to connect to the development AWS buckets."
-  }
-  tags_all = {
-    "description" = "The development version of schihist_digicoll_dev on eddie s laptop uses this to connect to the development AWS buckets."
-  }
-}
-
-# aws_iam_user.jrochkind_dev:
-resource "aws_iam_user" "jrochkind_dev" {
-  name     = "jrochkind_dev"
-  path     = "/"
-  tags     = {}
-  tags_all = {}
-}
 
 # aws_iam_group_policy_attachment.dev_users_mediaconvert_dev:
 resource "aws_iam_group_policy_attachment" "dev_users_mediaconvert_dev" {
