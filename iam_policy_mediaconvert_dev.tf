@@ -1,9 +1,3 @@
-# These roles and policies allow the Mediaconvert service
-# (which we use to make derivatives for video files)
-# to call s3 services on your behalf,
-# in dev, staging and production respectively.
-
-
 
 # aws_iam_policy.mediaconvert_dev:
 resource "aws_iam_policy" "mediaconvert_dev" {
