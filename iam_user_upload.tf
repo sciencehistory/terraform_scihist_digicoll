@@ -5,5 +5,3 @@ resource "aws_iam_user" "upload" {
   tags     = {}
   tags_all = {}
 }
-
-# terraform import aws_iam_user.upload upload
