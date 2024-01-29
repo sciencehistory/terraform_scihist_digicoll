@@ -112,7 +112,7 @@ resource "aws_cloudfront_distribution" "derivatives-video" {
     cache_policy_id = "b2884449-e4de-46a7-ac36-70bc7f1ddd6d"
 
     # references policy for far-future Cache-Control header to be added
-    response_headers_policy_id = aws_cloudfront_response_headers_policy.long-time-immutable-cache.id
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.cors-with-preflight-and-long-time-cache.id
   }
 
 
@@ -143,4 +143,67 @@ resource "aws_cloudfront_response_headers_policy" "long-time-immutable-cache" {
       value    = "max-age=31536000, immutable"
     }
   }
+}
+
+# Taking:
+# 1. force cache-control headers to far-future for immutable content, as above
+#
+# combined with
+#
+# 2. force "cors-with-preflight" headers, basing off the built-in managed policy
+#   https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-response-headers-policies.html#managed-response-headers-policies-cors-preflight
+#   This is meant to FORCE cors headers regardless of what source was providing --
+#   we were having a heck of a time succesfully setting up and proxing from S3
+#
+# You can't use two policies at once, so we need to copy the managed one to add
+# our thing onto it.
+#
+# Meant for use with video derivatives, which need CORS for video.js!
+resource "aws_cloudfront_response_headers_policy" "cors-with-preflight-and-long-time-cache" {
+  name    = "cors-with-preflight-and-long-time-cache-${terraform.workspace}"
+  comment = "far future Cache-Control"
+
+  custom_headers_config {
+    items {
+      header   = "Cache-Control"
+      override = false
+      value    = "max-age=31536000, immutable"
+    }
+  }
+
+  cors_config {
+    access_control_allow_credentials = false
+    access_control_max_age_sec       = 43200
+    origin_override                  = true
+
+    access_control_allow_headers {
+      items = [
+        "*",
+      ]
+    }
+
+    access_control_allow_methods {
+      items = [
+        "GET",
+        "HEAD",
+        "OPTIONS",
+      ]
+    }
+
+    access_control_allow_origins {
+      items = [
+        "*",
+      ]
+    }
+
+    access_control_expose_headers {
+      items = [
+        "*",
+      ]
+    }
+  }
+
+  security_headers_config {
+  }
+
 }
