@@ -16,10 +16,6 @@ resource "aws_s3_bucket" "originals" {
     "S3-Bucket-Name" = "${local.name_prefix}-originals"
   }
 
-  # logging {
-  #    target_bucket = "chf-logs"
-  #    target_prefix = "s3_server_access_${terraform.workspace}_originals/"
-  # }
 }
 
 
@@ -86,4 +82,26 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "originals" {
       sse_algorithm = "AES256"
     }
   }
+}
+
+# LOGGING:
+
+
+# terraform import aws_s3_bucket.chf-logs chf-logs
+resource "aws_s3_bucket" "chf-logs" {
+  force_destroy = false
+  bucket        = "chf-logs"
+  tags = {
+    "Role"           = "Production"
+    "S3-Bucket-Name" = "chf-logs"
+    "Service"        = "Systems"
+    "Type"           = "S3"
+  }
+}
+
+# % terraform import aws_s3_bucket_logging.example bucket-name
+resource "aws_s3_bucket_logging" "originals_logging" {
+   bucket        = aws_s3_bucket.originals.id
+   target_bucket = aws_s3_bucket.chf-logs.id
+   target_prefix = "s3_server_access_${terraform.workspace}_originals/"
 }
