@@ -16,10 +16,10 @@ resource "aws_s3_bucket" "originals" {
     "S3-Bucket-Name" = "${local.name_prefix}-originals"
   }
 
-  # logging {
-  #    target_bucket = "chf-logs"
-  #    target_prefix = "s3_server_access_${terraform.workspace}_originals/"
-  # }
+  logging {
+    target_bucket = "chf-logs"
+    target_prefix = "s3_server_access_${terraform.workspace}_originals/"
+  }
 }
 
 
