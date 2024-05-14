@@ -84,10 +84,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "originals" {
   }
 }
 
-# LOGGING:
-
-
-# terraform import aws_s3_bucket.chf-logs chf-logs
+# We may want to put this aws_s3_bucket in a separate file; would be more consistent with the existing setup.
 resource "aws_s3_bucket" "chf-logs" {
   force_destroy = false
   bucket        = "chf-logs"
@@ -100,8 +97,8 @@ resource "aws_s3_bucket" "chf-logs" {
 }
 
 # % terraform import aws_s3_bucket_logging.example bucket-name
-resource "aws_s3_bucket_logging" "originals_logging" {
-   bucket        = aws_s3_bucket.originals.id
-   target_bucket = aws_s3_bucket.chf-logs.id
-   target_prefix = "s3_server_access_${terraform.workspace}_originals/"
-}
+# resource "aws_s3_bucket_logging" "originals_logging" {
+#   bucket        = aws_s3_bucket.originals.id
+#   target_bucket = aws_s3_bucket.chf-logs.id
+#   target_prefix = "s3_server_access_${terraform.workspace}_originals/"
+# }
