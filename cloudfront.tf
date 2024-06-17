@@ -18,15 +18,13 @@ resource "aws_cloudfront_distribution" "rails_static_assets" {
       "OPTIONS",
     ]
 
+    compress = true
+
     target_origin_id       = "scihist-digicoll-${terraform.workspace}.herokuapp.com"
     viewer_protocol_policy = "https-only"
 
-    forwarded_values {
-      query_string = false
-      cookies {
-        forward = "none"
-      }
-    }
+    # AWS Managed-CachingOptimized policy
+    cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6"
   }
 
   origin {
