@@ -64,6 +64,16 @@ resource "aws_cloudfront_distribution" "rails_static_assets" {
   }
 }
 
+# An AWS OAC that we use for setting up CloudFront signed requests to S3, across
+# several CF distributions and S3 buckets.
+#
+resource "aws_cloudfront_origin_access_control" "signing-s3" {
+  description                       = "Cloudfront signed s3"
+  name                              = "${local.name_prefix}-signing-s3"
+  origin_access_control_origin_type = "s3"
+  signing_behavior                  = "always"
+  signing_protocol                  = "sigv4"
+}
 
 # Cache policy which starts with common CachingOptimized, but also cache based on selected
 # S3 query parameters. Including them in cache policy will make Cloudfront forward them to S3 too.
@@ -101,18 +111,6 @@ resource "aws_cloudfront_cache_policy"  "caching-optimized-plus-s3-params" {
 data "aws_cloudfront_response_headers_policy" "Managed-CORS-with-preflight-and-SecurityHeadersPolicy" {
     name = "Managed-CORS-with-preflight-and-SecurityHeadersPolicy"
 }
-
-# An AWS OAC that we use for setting up CloudFront signed requests to S3, across
-# several CF distributions and S3 buckets.
-#
-resource "aws_cloudfront_origin_access_control" "signing-s3" {
-  description                       = "Cloudfront signed s3"
-  name                              = "${local.name_prefix}-signing-s3"
-  origin_access_control_origin_type = "s3"
-  signing_behavior                  = "always"
-  signing_protocol                  = "sigv4"
-}
-
 
 
 # Used by any CloudFronts in front of content at "immutable" URLs (random URL
@@ -191,5 +189,4 @@ resource "aws_cloudfront_response_headers_policy" "cors-with-preflight-and-long-
 
   security_headers_config {
   }
-
 }
