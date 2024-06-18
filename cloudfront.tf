@@ -1,5 +1,9 @@
-# cloudfront distro we use for caching static asset content, recommended by heroku
+# Many of our s3 buckets have their own individual cloudfront distros on top; those are found
+# in config files with the S3 buckets.
+#
+# Here are free-standing distros, and infrastructure used in common.
 
+# cloudfront distro we use for caching static asset content, recommended by heroku
 resource "aws_cloudfront_distribution" "rails_static_assets" {
 
   comment         = "${terraform.workspace} static assets"
@@ -46,7 +50,6 @@ resource "aws_cloudfront_distribution" "rails_static_assets" {
   tags = {
     "Cloudfront-Distribution-Origin-Id" = "scihist-digicoll-${terraform.workspace}.herokuapp.com"
   }
-
 
   restrictions {
     geo_restriction {
@@ -126,6 +129,56 @@ resource "aws_cloudfront_distribution" "derivatives-video" {
     minimum_protocol_version       = "TLSv1"
   }
 }
+
+# Cache policy which starts with common CachingOptimized, but also cache based on selected
+# S3 query parameters. Including them in cache policy will make Cloudfront forward them to S3 too.
+#
+resource "aws_cloudfront_cache_policy"  "caching-optimized-plus-s3-params" {
+  name        = "${local.name_prefix}-caching-optimized-plus-s3-params"
+  comment     = "Based on Managed-CachingOptimized, but also including select S3 query params"
+  default_ttl = 86400
+  max_ttl     = 31536000
+  min_ttl     = 1
+  parameters_in_cache_key_and_forwarded_to_origin {
+    enable_accept_encoding_brotli = true
+    enable_accept_encoding_gzip   = true
+
+    cookies_config {
+      cookie_behavior = "none"
+    }
+    headers_config {
+      header_behavior = "none"
+    }
+    query_strings_config {
+      query_string_behavior = "whitelist"
+      query_strings {
+        items = [
+          "response-content-disposition",
+          "response-content-type"
+        ]
+      }
+    }
+  }
+}
+
+# Import ID for AWS managed response headers policy
+#
+data "aws_cloudfront_response_headers_policy" "Managed-CORS-with-preflight-and-SecurityHeadersPolicy" {
+    name = "Managed-CORS-with-preflight-and-SecurityHeadersPolicy"
+}
+
+# An AWS OAC that we use for setting up CloudFront signed requests to S3, across
+# several CF distributions and S3 buckets.
+#
+resource "aws_cloudfront_origin_access_control" "signing-s3" {
+  description                       = "Cloudfront signed s3"
+  name                              = "${local.name_prefix}-signing-s3"
+  origin_access_control_origin_type = "s3"
+  signing_behavior                  = "always"
+  signing_protocol                  = "sigv4"
+}
+
+
 
 # Used by any CloudFronts in front of content at "immutable" URLs (random URL
 # that will necessarily change if content does), but where origin (eg S3)
