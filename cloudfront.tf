@@ -117,7 +117,7 @@ data "aws_cloudfront_response_headers_policy" "Managed-CORS-with-preflight-and-S
 # that will necessarily change if content does), but where origin (eg S3)
 # is not providing far-future Cache headers -- we add them in.
 resource "aws_cloudfront_response_headers_policy" "long-time-immutable-cache" {
-  name    = "long-time-immutable-cache-${terraform.workspace}"
+  name    = "${terraform.workspace}-long-time-immutable-cache"
   comment = "far future Cache-Control"
 
   custom_headers_config {
@@ -144,8 +144,8 @@ resource "aws_cloudfront_response_headers_policy" "long-time-immutable-cache" {
 #
 # Meant for use with video derivatives, which need CORS for video.js!
 resource "aws_cloudfront_response_headers_policy" "cors-with-preflight-and-long-time-cache" {
-  name    = "cors-with-preflight-and-long-time-cache-${terraform.workspace}"
-  comment = "far future Cache-Control"
+  name    = "${terraform.workspace}-cors-with-preflight-and-long-time-cache"
+  comment = "CORS preflight headers, with far future Cache-Control"
 
   custom_headers_config {
     items {
