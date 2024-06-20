@@ -124,7 +124,7 @@ resource "aws_cloudfront_response_headers_policy" "long-time-immutable-cache" {
     items {
       header   = "Cache-Control"
       override = false
-      value    = "max-age=31536000, immutable"
+      value    = "max-age=31536000, public, immutable"
     }
   }
 }
@@ -151,7 +151,7 @@ resource "aws_cloudfront_response_headers_policy" "cors-with-preflight-and-long-
     items {
       header   = "Cache-Control"
       override = false
-      value    = "max-age=31536000, immutable"
+      value    = "max-age=31536000, public, immutable"
     }
   }
 
