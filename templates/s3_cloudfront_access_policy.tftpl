@@ -1,7 +1,8 @@
-# S3 Access policy which will allow access from a cloudfront distribution.
-# Requires template args `cloudfront_arn` and `bucket_name`.
+${
+  # S3 Access policy which will allow access from a cloudfront distribution.
+  # Requires template args `cloudfront_arn` and `bucket_name`.
 
-${jsonencode(
+  jsonencode(
       {
           Id        = "PolicyForCloudFrontPrivateContent"
           Statement = [
