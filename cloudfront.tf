@@ -112,6 +112,11 @@ data "aws_cloudfront_response_headers_policy" "Managed-CORS-with-preflight-and-S
     name = "Managed-CORS-with-preflight-and-SecurityHeadersPolicy"
 }
 
+data "aws_cloudfront_response_headers_policy" "Managed-SecurityHeadersPolicy" {
+    name = "Managed-SecurityHeadersPolicy"
+}
+
+
 
 # Used by any CloudFronts in front of content at "immutable" URLs (random URL
 # that will necessarily change if content does), but where origin (eg S3)

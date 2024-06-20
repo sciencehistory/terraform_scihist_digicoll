@@ -11,3 +11,7 @@ output "S3_BUCKET_DERIVATIVES_VIDEO_HOST" {
 output "S3_BUCKET_DERIVATIVES_HOST" {
   value = aws_cloudfront_distribution.derivatives.domain_name
 }
+
+output "S3_BUCKET_ORIGINALS_HOST" {
+  value = aws_cloudfront_distribution.originals.domain_name
+}
