@@ -106,7 +106,7 @@ resource "aws_cloudfront_cache_policy"  "caching-optimized-plus-s3-params" {
   }
 }
 
-# Import ID for AWS managed response headers policy
+# Import ID for AWS managed response and cache headers policy
 #
 data "aws_cloudfront_response_headers_policy" "Managed-CORS-with-preflight-and-SecurityHeadersPolicy" {
     name = "Managed-CORS-with-preflight-and-SecurityHeadersPolicy"
@@ -116,6 +116,9 @@ data "aws_cloudfront_response_headers_policy" "Managed-SecurityHeadersPolicy" {
     name = "Managed-SecurityHeadersPolicy"
 }
 
+data "aws_cloudfront_cache_policy" "Managed-CachingOptimized" {
+    name = "Managed-CachingOptimized"
+}
 
 
 # Used by any CloudFronts in front of content at "immutable" URLs (random URL

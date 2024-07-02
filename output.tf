@@ -16,6 +16,10 @@ output "S3_BUCKET_ORIGINALS_HOST" {
   value = aws_cloudfront_distribution.originals.domain_name
 }
 
+output "S3_BUCKET_DZI_HOST" {
+  value = aws_cloudfront_distribution.dzi.domain_name
+}
+
 output "CLOUDFRONT_KEY_PAIR_ID" {
   value = aws_cloudfront_public_key.scihist-digicoll.id
 }
