@@ -16,7 +16,7 @@ resource "aws_s3_bucket" "derivatives_video" {
 
   tags = {
     "service"        = local.service_tag
-    "use"            = "derivatives"
+    "use"            = "derivatives-video"
     "S3-Bucket-Name" = "${local.name_prefix}-derivatives-video"
   }
 }
@@ -41,6 +41,8 @@ resource "aws_cloudfront_distribution" "derivatives-video" {
   # add tag matching bucket name tag used for S3 buckets themselves,
   # for cost analysis.
   tags = {
+    "service"        = local.service_tag
+    "use"            = "derivatives-video"
     "Cloudfront-Distribution-Origin-Id" = "${terraform.workspace}-derivatives-video.s3"
     "S3-Bucket-Name"                    = "${local.name_prefix}-derivatives-video"
   }

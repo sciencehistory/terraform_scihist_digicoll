@@ -48,7 +48,7 @@ resource "aws_s3_bucket_public_access_block" "derivatives" {
 
 
 resource "aws_cloudfront_distribution" "derivatives" {
-  comment         = "${local.name_prefix}-derivatives bucket"
+  comment         = "${terraform.workspace}-derivatives S3"
   enabled         = true
   is_ipv6_enabled = true
   http_version    = "http2and3"
@@ -105,6 +105,7 @@ resource "aws_cloudfront_distribution" "derivatives" {
     "service"        = local.service_tag
     "use"            = "derivatives"
     "S3-Bucket-Name" = "${local.name_prefix}-derivatives"
+    "Cloudfront-Distribution-Origin-Id" = "${terraform.workspace}-derivatives.s3"
   }
 }
 

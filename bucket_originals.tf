@@ -38,7 +38,7 @@ resource "aws_s3_bucket_replication_configuration" "originals" {
 # And it passes on response-content-disposition and response-content-type
 #
 resource "aws_cloudfront_distribution" "originals" {
-  comment         = "${local.name_prefix}-originals bucket"
+  comment         = "${terraform.workspace}-originals S3"
   enabled         = true
   is_ipv6_enabled = true
   http_version    = "http2and3"
@@ -94,6 +94,7 @@ resource "aws_cloudfront_distribution" "originals" {
     "service"        = local.service_tag
     "use"            = "originals"
     "S3-Bucket-Name" = "${local.name_prefix}-originals"
+    "Cloudfront-Distribution-Origin-Id" = "${terraform.workspace}-originals.s3"
   }
 }
 

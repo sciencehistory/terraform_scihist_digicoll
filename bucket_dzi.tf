@@ -50,7 +50,7 @@ resource "aws_s3_bucket_public_access_block" "dzi" {
 }
 
 resource "aws_cloudfront_distribution" "dzi" {
-  comment         = "${local.name_prefix}-dzi bucket"
+  comment         = "${terraform.workspace}-dzi S3"
   enabled         = true
   is_ipv6_enabled = true
   http_version    = "http2and3"
@@ -107,6 +107,7 @@ resource "aws_cloudfront_distribution" "dzi" {
     "service"        = local.service_tag
     "use"            = "dzi"
     "S3-Bucket-Name" = "${local.name_prefix}-dzi"
+    "Cloudfront-Distribution-Origin-Id" = "${terraform.workspace}-dzi.s3"
   }
 }
 
