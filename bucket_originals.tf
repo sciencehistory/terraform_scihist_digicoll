@@ -89,6 +89,12 @@ resource "aws_cloudfront_distribution" "originals" {
   viewer_certificate {
     cloudfront_default_certificate = true
   }
+
+  tags = {
+    "service"        = local.service_tag
+    "use"            = "originals"
+    "S3-Bucket-Name" = "${local.name_prefix}-originals"
+  }
 }
 
 resource "aws_s3_bucket_policy" "originals" {
