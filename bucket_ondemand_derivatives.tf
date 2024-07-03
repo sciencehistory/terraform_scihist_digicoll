@@ -85,7 +85,7 @@ resource "aws_cloudfront_distribution" "ondemand_derivatives" {
     target_origin_id       = aws_s3_bucket.ondemand_derivatives.bucket_regional_domain_name
     viewer_protocol_policy = "https-only"
 
-    cache_policy_id = data.aws_cloudfront_cache_policy.Managed-CachingOptimized.id
+    cache_policy_id = aws_cloudfront_cache_policy.caching-optimized-plus-s3-params.id
 
     response_headers_policy_id = data.aws_cloudfront_response_headers_policy.Managed-CORS-with-preflight-and-SecurityHeadersPolicy.id
   }
