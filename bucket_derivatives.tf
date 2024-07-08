@@ -30,23 +30,21 @@ resource "aws_s3_bucket_replication_configuration" "derivatives" {
 
 resource "aws_s3_bucket_policy" "derivatives" {
   bucket = aws_s3_bucket.derivatives.id
-  policy = templatefile("templates/temp_s3_cloudfront_access_plus_public_policy.tftpl",
+  policy = templatefile("templates/s3_cloudfront_access_policy.tftpl",
                         {
                           bucket_name : aws_s3_bucket.derivatives.id,
                           cloudfront_arn : aws_cloudfront_distribution.derivatives.arn
                         })
 }
 
-# Enable in final step of migration to cloudfront
-#
-# resource "aws_s3_bucket_public_access_block" "derivatives" {
-#   bucket = aws_s3_bucket.derivatives.id
+resource "aws_s3_bucket_public_access_block" "derivatives" {
+  bucket = aws_s3_bucket.derivatives.id
 
-#   block_public_acls       = true
-#   block_public_policy     = true
-#   ignore_public_acls      = true
-#   restrict_public_buckets = true
-# }
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
 
 
 resource "aws_cloudfront_distribution" "derivatives" {
@@ -113,7 +111,7 @@ resource "aws_cloudfront_distribution" "derivatives" {
 
 
 # probably not really necessary now that we're fronting with
-# cloudfront and having CF add CORS headers, but does not hurt.
+# cloudfront and having CF add CORS headers
 resource "aws_s3_bucket_cors_configuration" "derivatives" {
   bucket = aws_s3_bucket.derivatives.id
 
