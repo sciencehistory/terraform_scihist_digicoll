@@ -32,7 +32,7 @@ resource "aws_s3_bucket_replication_configuration" "dzi" {
 
 resource "aws_s3_bucket_policy" "dzi" {
   bucket = aws_s3_bucket.dzi.id
-  policy = templatefile("templates/s3_cloudfront_access_policy.tftpl",
+  policy = templatefile("templates/temp_s3_cloudfront_access_plus_public_policy.tftpl",
                         {
                           bucket_name : aws_s3_bucket.dzi.id,
                           cloudfront_arn : aws_cloudfront_distribution.dzi.arn
@@ -40,14 +40,16 @@ resource "aws_s3_bucket_policy" "dzi" {
 
 }
 
-resource "aws_s3_bucket_public_access_block" "dzi" {
-  bucket = aws_s3_bucket.dzi.id
+# Enable after final step of cloudfront migration
+#
+# resource "aws_s3_bucket_public_access_block" "dzi" {
+#   bucket = aws_s3_bucket.dzi.id
 
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-}
+#   block_public_acls       = true
+#   block_public_policy     = true
+#   ignore_public_acls      = true
+#   restrict_public_buckets = true
+# }
 
 resource "aws_cloudfront_distribution" "dzi" {
   comment         = "${terraform.workspace}-dzi S3"

@@ -21,18 +21,20 @@ resource "aws_s3_bucket" "derivatives_video" {
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "derivatives_video" {
-  bucket = aws_s3_bucket.originals.id
+# Enable in final step of migration to cloudfront
+#
+# resource "aws_s3_bucket_public_access_block" "derivatives_video" {
+#   bucket = aws_s3_bucket.originals.id
 
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-}
+#   block_public_acls       = true
+#   block_public_policy     = true
+#   ignore_public_acls      = true
+#   restrict_public_buckets = true
+# }
 
 resource "aws_s3_bucket_policy" "derivatives_video" {
   bucket = aws_s3_bucket.derivatives_video.id
-  policy = templatefile("templates/s3_cloudfront_access_policy.tftpl",
+  policy = templatefile("templates/temp_s3_cloudfront_access_plus_public_policy.tftpl",
                         {
                           bucket_name : aws_s3_bucket.derivatives_video.id,
                           cloudfront_arn : aws_cloudfront_distribution.derivatives-video.arn
