@@ -21,94 +21,22 @@ resource "aws_s3_bucket" "derivatives_video" {
   }
 }
 
-# Video-derviatives cloudfront, in front of S3
-# * cheaper price class North America/Europe only
-# * add on cache-control header with far future caches for clients,
-#   since MediaConvert won't write those in our outputs in S3 already
-resource "aws_cloudfront_distribution" "derivatives-video" {
-  comment         = "${terraform.workspace}-derivatives-video S3"
-  enabled         = true
-  is_ipv6_enabled = true
+resource "aws_s3_bucket_public_access_block" "derivatives_video" {
+  bucket = aws_s3_bucket.originals.id
 
-  # North America/Europe only, cheaper price class
-  price_class = "PriceClass_100"
-
-  origin {
-    domain_name = "scihist-digicoll-${terraform.workspace}-derivatives-video.s3.${var.aws_region}.amazonaws.com"
-    origin_id   = "${terraform.workspace}-derivatives-video.s3"
-  }
-
-  # add tag matching bucket name tag used for S3 buckets themselves,
-  # for cost analysis.
-  tags = {
-    "service"        = local.service_tag
-    "use"            = "derivatives-video"
-    "Cloudfront-Distribution-Origin-Id" = "${terraform.workspace}-derivatives-video.s3"
-    "S3-Bucket-Name"                    = "${local.name_prefix}-derivatives-video"
-  }
-
-
-  default_cache_behavior {
-    allowed_methods = [
-      "GET",
-      "HEAD",
-      "OPTIONS",
-    ]
-    cached_methods = [
-      "GET",
-      "HEAD",
-      "OPTIONS",
-    ]
-
-    # We're already sending mp4 content, adding gzip compression on top
-    # won't help and may hurt.
-    compress = false
-
-    target_origin_id       = "${terraform.workspace}-derivatives-video.s3"
-    viewer_protocol_policy = "https-only"
-
-    # AWS Managed policy for `Managed-CachingOptimizedForUncompressedObjects`
-    cache_policy_id = "b2884449-e4de-46a7-ac36-70bc7f1ddd6d"
-
-    # references policy for far-future Cache-Control header to be added
-    response_headers_policy_id = aws_cloudfront_response_headers_policy.cors-with-preflight-and-long-time-cache.id
-  }
-
-
-  restrictions {
-    geo_restriction {
-      locations        = []
-      restriction_type = "none"
-    }
-  }
-
-  viewer_certificate {
-    cloudfront_default_certificate = true
-  }
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
-resource "aws_s3_bucket_cors_configuration" "derivatives_video" {
+resource "aws_s3_bucket_policy" "derivatives_video" {
   bucket = aws_s3_bucket.derivatives_video.id
-
-  cors_rule {
-    allowed_headers = [
-      "*",
-    ]
-    allowed_methods = [
-      "GET",
-      "HEAD",
-    ]
-    allowed_origins = [
-      "*",
-    ]
-    expose_headers  = []
-    max_age_seconds = 43200
-  }
-}
-
-resource "aws_s3_bucket_policy" "derivatives-video" {
-  bucket = aws_s3_bucket.derivatives_video.id
-  policy = templatefile("templates/s3_public_read_policy.tftpl", { bucket_name : aws_s3_bucket.derivatives_video.id })
+  policy = templatefile("templates/s3_cloudfront_access_policy.tftpl",
+                        {
+                          bucket_name : aws_s3_bucket.derivatives_video.id,
+                          cloudfront_arn : aws_cloudfront_distribution.derivatives-video.arn
+                        })
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "derivatives_video" {
@@ -148,5 +76,75 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "derivatives_video
     apply_server_side_encryption_by_default {
       sse_algorithm = "AES256"
     }
+  }
+}
+
+# Video-derviatives cloudfront, in front of S3
+# * cheaper price class North America/Europe only
+# * add on cache-control header with far future caches for clients,
+#   since MediaConvert won't write those in our outputs in S3 already
+resource "aws_cloudfront_distribution" "derivatives-video" {
+  comment         = "${terraform.workspace}-derivatives-video S3"
+  enabled         = true
+  is_ipv6_enabled = true
+
+  # North America/Europe only, cheaper price class
+  price_class = "PriceClass_100"
+
+  origin {
+    connection_attempts       = 3
+    connection_timeout        = 1
+    domain_name = "scihist-digicoll-${terraform.workspace}-derivatives-video.s3.${var.aws_region}.amazonaws.com"
+    origin_id   = "${terraform.workspace}-derivatives-video.s3"
+
+    # Sign requests so we can pass through response-content-disposition etc
+    origin_access_control_id  = aws_cloudfront_origin_access_control.signing-s3.id
+  }
+
+  # add tag matching bucket name tag used for S3 buckets themselves,
+  # for cost analysis.
+  tags = {
+    "service"        = local.service_tag
+    "use"            = "derivatives-video"
+    "Cloudfront-Distribution-Origin-Id" = "${terraform.workspace}-derivatives-video.s3"
+    "S3-Bucket-Name"                    = "${local.name_prefix}-derivatives-video"
+  }
+
+
+  default_cache_behavior {
+    allowed_methods = [
+      "GET",
+      "HEAD",
+      "OPTIONS",
+    ]
+    cached_methods = [
+      "GET",
+      "HEAD",
+      "OPTIONS",
+    ]
+
+    # We're already sending mp4 content, adding gzip compression on top
+    # won't help and may hurt.
+    compress = false
+
+    target_origin_id       = "${terraform.workspace}-derivatives-video.s3"
+    viewer_protocol_policy = "https-only"
+
+    cache_policy_id = data.aws_cloudfront_cache_policy.Managed-CachingOptimized.id
+
+    # references policy for far-future Cache-Control header to be added
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.cors-with-preflight-and-long-time-cache.id
+  }
+
+
+  restrictions {
+    geo_restriction {
+      locations        = []
+      restriction_type = "none"
+    }
+  }
+
+  viewer_certificate {
+    cloudfront_default_certificate = true
   }
 }
