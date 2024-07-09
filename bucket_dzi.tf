@@ -113,6 +113,26 @@ resource "aws_cloudfront_distribution" "dzi" {
   }
 }
 
+# probably not really necessary now that we're fronting with
+# cloudfront and having CF add CORS headers
+resource "aws_s3_bucket_cors_configuration" "dzi" {
+  bucket = aws_s3_bucket.dzi.id
+
+  cors_rule {
+    allowed_headers = [
+      "*",
+    ]
+    allowed_methods = [
+      "GET",
+    ]
+    allowed_origins = [
+      "*",
+    ]
+    expose_headers  = []
+    max_age_seconds = 43200
+  }
+}
+
 resource "aws_s3_bucket_lifecycle_configuration" "dzi" {
   bucket = aws_s3_bucket.dzi.id
 

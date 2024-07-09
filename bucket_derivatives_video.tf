@@ -81,6 +81,26 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "derivatives_video
   }
 }
 
+# probably not really necessary now that we're fronting with
+# cloudfront and having CF add CORS headers
+resource "aws_s3_bucket_cors_configuration" "derivatives-video" {
+  bucket = aws_s3_bucket.derivatives_video.id
+
+  cors_rule {
+    allowed_headers = [
+      "*",
+    ]
+    allowed_methods = [
+      "GET",
+    ]
+    allowed_origins = [
+      "*",
+    ]
+    expose_headers  = []
+    max_age_seconds = 43200
+  }
+}
+
 # Video-derviatives cloudfront, in front of S3
 # * cheaper price class North America/Europe only
 # * add on cache-control header with far future caches for clients,
