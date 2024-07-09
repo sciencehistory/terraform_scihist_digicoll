@@ -1,5 +1,9 @@
-# cloudfront distro we use for caching static asset content, recommended by heroku
+# Many of our s3 buckets have their own individual cloudfront distros on top; those are found
+# in config files with the S3 buckets.
+#
+# Here are free-standing distros, and infrastructure used in common.
 
+# cloudfront distro we use for caching static asset content, recommended by heroku
 resource "aws_cloudfront_distribution" "rails_static_assets" {
 
   comment         = "${terraform.workspace} static assets"
@@ -47,7 +51,6 @@ resource "aws_cloudfront_distribution" "rails_static_assets" {
     "Cloudfront-Distribution-Origin-Id" = "scihist-digicoll-${terraform.workspace}.herokuapp.com"
   }
 
-
   restrictions {
     geo_restriction {
       locations        = []
@@ -61,77 +64,68 @@ resource "aws_cloudfront_distribution" "rails_static_assets" {
   }
 }
 
+# An AWS OAC that we use for setting up CloudFront signed requests to S3, across
+# several CF distributions and S3 buckets.
+#
+resource "aws_cloudfront_origin_access_control" "signing-s3" {
+  description                       = "Cloudfront signed s3"
+  name                              = "${local.name_prefix}-signing-s3"
+  origin_access_control_origin_type = "s3"
+  signing_behavior                  = "always"
+  signing_protocol                  = "sigv4"
+}
 
-# Video-derviatives cloudfront, in front of S3
-# * cheaper price class North America/Europe only
-# * add on cache-control header with far future caches for clients,
-#   since MediaConvert won't write those in our outputs in S3 already
-resource "aws_cloudfront_distribution" "derivatives-video" {
-  comment         = "${terraform.workspace}-derivatives-video S3"
-  enabled         = true
-  is_ipv6_enabled = true
+# Cache policy which starts with common CachingOptimized, but also cache based on selected
+# S3 query parameters. Including them in cache policy will make Cloudfront forward them to S3 too.
+#
+resource "aws_cloudfront_cache_policy"  "caching-optimized-plus-s3-params" {
+  name        = "${local.name_prefix}-caching-optimized-plus-s3-params"
+  comment     = "Based on Managed-CachingOptimized, but also including select S3 query params"
+  default_ttl = 86400
+  max_ttl     = 31536000
+  min_ttl     = 1
+  parameters_in_cache_key_and_forwarded_to_origin {
+    enable_accept_encoding_brotli = true
+    enable_accept_encoding_gzip   = true
 
-  # North America/Europe only, cheaper price class
-  price_class = "PriceClass_100"
-
-  origin {
-    domain_name = "scihist-digicoll-${terraform.workspace}-derivatives-video.s3.${var.aws_region}.amazonaws.com"
-    origin_id   = "${terraform.workspace}-derivatives-video.s3"
-  }
-
-  # add tag matching bucket name tag used for S3 buckets themselves,
-  # for cost analysis.
-  tags = {
-    "Cloudfront-Distribution-Origin-Id" = "${terraform.workspace}-derivatives-video.s3"
-    "S3-Bucket-Name"                    = "${local.name_prefix}-derivatives-video"
-  }
-
-
-  default_cache_behavior {
-    allowed_methods = [
-      "GET",
-      "HEAD",
-      "OPTIONS",
-    ]
-    cached_methods = [
-      "GET",
-      "HEAD",
-      "OPTIONS",
-    ]
-
-    # We're already sending mp4 content, adding gzip compression on top
-    # won't help and may hurt.
-    compress = false
-
-    target_origin_id       = "${terraform.workspace}-derivatives-video.s3"
-    viewer_protocol_policy = "https-only"
-
-    # AWS Managed policy for `Managed-CachingOptimizedForUncompressedObjects`
-    cache_policy_id = "b2884449-e4de-46a7-ac36-70bc7f1ddd6d"
-
-    # references policy for far-future Cache-Control header to be added
-    response_headers_policy_id = aws_cloudfront_response_headers_policy.cors-with-preflight-and-long-time-cache.id
-  }
-
-
-  restrictions {
-    geo_restriction {
-      locations        = []
-      restriction_type = "none"
+    cookies_config {
+      cookie_behavior = "none"
+    }
+    headers_config {
+      header_behavior = "none"
+    }
+    query_strings_config {
+      query_string_behavior = "whitelist"
+      query_strings {
+        items = [
+          "response-content-disposition",
+          "response-content-type"
+        ]
+      }
     }
   }
-
-  viewer_certificate {
-    cloudfront_default_certificate = true
-    minimum_protocol_version       = "TLSv1"
-  }
 }
+
+# Import ID for AWS managed response and cache headers policy
+#
+data "aws_cloudfront_response_headers_policy" "Managed-CORS-with-preflight-and-SecurityHeadersPolicy" {
+    name = "Managed-CORS-with-preflight-and-SecurityHeadersPolicy"
+}
+
+data "aws_cloudfront_response_headers_policy" "Managed-SecurityHeadersPolicy" {
+    name = "Managed-SecurityHeadersPolicy"
+}
+
+data "aws_cloudfront_cache_policy" "Managed-CachingOptimized" {
+    name = "Managed-CachingOptimized"
+}
+
 
 # Used by any CloudFronts in front of content at "immutable" URLs (random URL
 # that will necessarily change if content does), but where origin (eg S3)
 # is not providing far-future Cache headers -- we add them in.
 resource "aws_cloudfront_response_headers_policy" "long-time-immutable-cache" {
-  name    = "long-time-immutable-cache-${terraform.workspace}"
+  name    = "${terraform.workspace}-long-time-immutable-cache"
   comment = "far future Cache-Control"
 
   custom_headers_config {
@@ -158,8 +152,8 @@ resource "aws_cloudfront_response_headers_policy" "long-time-immutable-cache" {
 #
 # Meant for use with video derivatives, which need CORS for video.js!
 resource "aws_cloudfront_response_headers_policy" "cors-with-preflight-and-long-time-cache" {
-  name    = "cors-with-preflight-and-long-time-cache-${terraform.workspace}"
-  comment = "far future Cache-Control"
+  name    = "${terraform.workspace}-cors-with-preflight-and-long-time-cache"
+  comment = "CORS preflight headers, with far future Cache-Control"
 
   custom_headers_config {
     items {
@@ -203,5 +197,19 @@ resource "aws_cloudfront_response_headers_policy" "cors-with-preflight-and-long-
 
   security_headers_config {
   }
-
 }
+
+# private keys stored in 1password shared valut as `scihist-digicoll-staging_private_key.pem` and `scihist-digicoll-production-private_key.pem`
+#  the private keys need to be exported from 1password in PKCS#8 format
+resource "aws_cloudfront_public_key" "scihist-digicoll" {
+  comment     = "public key used by our app for signing urls"
+  encoded_key = file("./${local.name_prefix}-public_key.pem")
+  name        = "${local.name_prefix}-key-2024-1"
+}
+
+resource "aws_cloudfront_key_group" "scihist-digicoll" {
+  comment = "key group used by our app for signing urls"
+  items   = [aws_cloudfront_public_key.scihist-digicoll.id]
+  name    = "${local.name_prefix}-group"
+}
+

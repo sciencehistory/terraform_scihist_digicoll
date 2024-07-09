@@ -33,6 +33,79 @@ resource "aws_s3_bucket_replication_configuration" "originals" {
   }
 }
 
+# Cloudfront distro fronting originals is RESTRICTED and needs signed urls,
+#
+# And it passes on response-content-disposition and response-content-type
+#
+resource "aws_cloudfront_distribution" "originals" {
+  comment         = "${terraform.workspace}-originals S3"
+  enabled         = true
+  is_ipv6_enabled = true
+  http_version    = "http2and3"
+
+  # Only North America/Europe to save money
+  price_class     = "PriceClass_100"
+
+  default_cache_behavior {
+    allowed_methods = [
+      "GET",
+      "HEAD",
+      "OPTIONS",
+    ]
+    cached_methods = [
+      "GET",
+      "HEAD",
+      "OPTIONS",
+    ]
+
+    compress = true
+
+    target_origin_id       = aws_s3_bucket.originals.bucket_regional_domain_name
+    viewer_protocol_policy = "https-only"
+
+    trusted_key_groups = [aws_cloudfront_key_group.scihist-digicoll.id]
+
+    cache_policy_id = aws_cloudfront_cache_policy.caching-optimized-plus-s3-params.id
+
+    # Don't need CORS on originals at present, but I guess security is good?
+    response_headers_policy_id = data.aws_cloudfront_response_headers_policy.Managed-SecurityHeadersPolicy.id
+  }
+
+  origin {
+    connection_attempts       = 3
+    connection_timeout        = 1
+    domain_name               = aws_s3_bucket.originals.bucket_regional_domain_name
+    origin_id                 = aws_s3_bucket.originals.bucket_regional_domain_name
+    origin_access_control_id  = aws_cloudfront_origin_access_control.signing-s3.id
+  }
+
+  restrictions {
+    geo_restriction {
+      locations        = []
+      restriction_type = "none"
+    }
+  }
+
+  viewer_certificate {
+    cloudfront_default_certificate = true
+  }
+
+  tags = {
+    "service"        = local.service_tag
+    "use"            = "originals"
+    "S3-Bucket-Name" = "${local.name_prefix}-originals"
+    "Cloudfront-Distribution-Origin-Id" = "${terraform.workspace}-originals.s3"
+  }
+}
+
+resource "aws_s3_bucket_policy" "originals" {
+  bucket = aws_s3_bucket.originals.id
+  policy = templatefile("templates/s3_cloudfront_access_policy.tftpl",
+                        {
+                          bucket_name : aws_s3_bucket.originals.id,
+                          cloudfront_arn : aws_cloudfront_distribution.originals.arn
+                        })
+}
 
 resource "aws_s3_bucket_public_access_block" "originals" {
   bucket = aws_s3_bucket.originals.id

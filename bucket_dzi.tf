@@ -32,25 +32,84 @@ resource "aws_s3_bucket_replication_configuration" "dzi" {
 
 resource "aws_s3_bucket_policy" "dzi" {
   bucket = aws_s3_bucket.dzi.id
-  policy = templatefile("templates/s3_public_read_policy.tftpl", { bucket_name : aws_s3_bucket.dzi.id })
+  policy = templatefile("templates/temp_s3_cloudfront_access_plus_public_policy.tftpl",
+                        {
+                          bucket_name : aws_s3_bucket.dzi.id,
+                          cloudfront_arn : aws_cloudfront_distribution.dzi.arn
+                        })
+
 }
 
-resource "aws_s3_bucket_cors_configuration" "dzi" {
+# Enable after final step of cloudfront migration
+#
+# resource "aws_s3_bucket_public_access_block" "dzi" {
+#   bucket = aws_s3_bucket.dzi.id
 
-  bucket = aws_s3_bucket.dzi.id
+#   block_public_acls       = true
+#   block_public_policy     = true
+#   ignore_public_acls      = true
+#   restrict_public_buckets = true
+# }
 
-  cors_rule {
-    allowed_headers = [
-      "*",
-    ]
+resource "aws_cloudfront_distribution" "dzi" {
+  comment         = "${terraform.workspace}-dzi S3"
+  enabled         = true
+  is_ipv6_enabled = true
+  http_version    = "http2and3"
+
+  # Only North America/Europe to save money
+  price_class     = "PriceClass_100"
+
+  default_cache_behavior {
     allowed_methods = [
       "GET",
+      "HEAD",
+      "OPTIONS",
     ]
-    allowed_origins = [
-      "*",
+    cached_methods = [
+      "GET",
+      "HEAD",
+      "OPTIONS",
     ]
-    expose_headers  = []
-    max_age_seconds = 43200
+
+    compress = true
+
+    target_origin_id       = aws_s3_bucket.dzi.bucket_regional_domain_name
+    viewer_protocol_policy = "https-only"
+
+    # pass through response-content-disposition etc
+    cache_policy_id = data.aws_cloudfront_cache_policy.Managed-CachingOptimized.id
+
+    response_headers_policy_id = data.aws_cloudfront_response_headers_policy.Managed-CORS-with-preflight-and-SecurityHeadersPolicy.id
+  }
+
+  origin {
+    connection_attempts       = 3
+    connection_timeout        = 1
+    domain_name               = aws_s3_bucket.dzi.bucket_regional_domain_name
+    origin_id                 = aws_s3_bucket.dzi.bucket_regional_domain_name
+
+    # Sign requests to non-public bucket
+    origin_access_control_id  = aws_cloudfront_origin_access_control.signing-s3.id
+  }
+
+  restrictions {
+    geo_restriction {
+      locations        = []
+      restriction_type = "none"
+    }
+  }
+
+  viewer_certificate {
+    cloudfront_default_certificate = true
+  }
+
+  # Tag same as bucket origin to aggregate costs together
+  tags = {
+    "service"        = local.service_tag
+    "use"            = "dzi"
+    "S3-Bucket-Name" = "${local.name_prefix}-dzi"
+    "Cloudfront-Distribution-Origin-Id" = "${terraform.workspace}-dzi.s3"
   }
 }
 

@@ -1,0 +1,37 @@
+${
+  # S3 Access policy which will allow access from a cloudfront distribution.
+  # Requires template args `cloudfront_arn` and `bucket_name`.
+
+  # TEMPORARILY also includes public access for migration to cloudfront,
+  # as last step of migration we delete this policy and switch to s3_cloudfront_access_policy.tttpl
+
+  jsonencode(
+      {
+          Id        = "PolicyForCloudFrontPrivateContent"
+          Statement = [
+              {
+                  Action    = "s3:GetObject"
+                  Condition = {
+                      StringEquals = {
+                          "AWS:SourceArn" = "${cloudfront_arn}"
+                      }
+                  }
+                  Effect    = "Allow"
+                  Principal = {
+                      Service = "cloudfront.amazonaws.com"
+                  }
+                  Resource  = "arn:aws:s3:::${bucket_name}/*"
+                  Sid       = "AllowCloudFrontServicePrincipal"
+                },
+            {
+                Action    = "s3:GetObject"
+                Effect    = "Allow"
+                Principal = "*"
+                Resource  = "arn:aws:s3:::${bucket_name}/*"
+                Sid       = "AddPerm"
+            },
+          ]
+          Version   = "2008-10-17"
+      }
+  )
+}
