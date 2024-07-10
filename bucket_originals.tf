@@ -157,18 +157,6 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "originals" {
   }
 }
 
-# We may want to put this aws_s3_bucket in a separate file; would be more consistent with the existing setup.
-resource "aws_s3_bucket" "chf-logs" {
-  force_destroy = false
-  bucket        = "chf-logs"
-  tags = {
-    "Role"           = "Production"
-    "S3-Bucket-Name" = "chf-logs"
-    "Service"        = "Systems"
-    "Type"           = "S3"
-  }
-}
-
 # % terraform import aws_s3_bucket_logging.example bucket-name
 # resource "aws_s3_bucket_logging" "originals_logging" {
 #   bucket        = aws_s3_bucket.originals.id
