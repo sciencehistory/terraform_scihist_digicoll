@@ -61,6 +61,7 @@ resource "aws_s3_bucket_policy" "ondemand_derivatives" {
 #   restrict_public_buckets = true
 # }
 
+
 resource "aws_cloudfront_distribution" "ondemand_derivatives" {
   comment         = "${terraform.workspace}-ondemand-derivatives S3"
   enabled         = true
@@ -120,6 +121,12 @@ resource "aws_cloudfront_distribution" "ondemand_derivatives" {
     "S3-Bucket-Name" = "${local.name_prefix}-ondemand-derivatives"
     "Cloudfront-Distribution-Origin-Id" = "${terraform.workspace}-ondemand-derivatives.s3"
   }
+
+  logging_config {
+    bucket            = aws_s3_bucket.chf-logs.bucket_domain_name
+    include_cookies   = false
+    prefix            = "cloudfront_access_logs/${terraform.workspace}-ondemand-derivatives/"
+  }
 }
 
 
@@ -140,4 +147,11 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "ondemand_derivati
       sse_algorithm = "AES256"
     }
   }
+}
+
+# $ terraform import aws_s3_bucket_logging.originals_logging scihist-digicoll-staging-originals
+resource "aws_s3_bucket_logging" "ondemand_derivatives" {
+  bucket        = aws_s3_bucket.ondemand_derivatives.id
+  target_bucket = aws_s3_bucket.chf-logs.id
+  target_prefix = "s3_access_logs/${terraform.workspace}-ondemand-derivatives/"
 }

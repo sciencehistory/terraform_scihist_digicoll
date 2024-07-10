@@ -101,6 +101,13 @@ resource "aws_s3_bucket_cors_configuration" "derivatives-video" {
   }
 }
 
+# $ terraform import aws_s3_bucket_logging.originals_logging scihist-digicoll-staging-originals
+resource "aws_s3_bucket_logging" "derivatives_video_logging" {
+  bucket        = aws_s3_bucket.derivatives_video.id
+  target_bucket = aws_s3_bucket.chf-logs.id
+  target_prefix = "s3_access_logs/${terraform.workspace}-derivatives-video/"
+}
+
 # Video-derviatives cloudfront, in front of S3
 # * cheaper price class North America/Europe only
 # * add on cache-control header with far future caches for clients,
@@ -168,5 +175,11 @@ resource "aws_cloudfront_distribution" "derivatives-video" {
 
   viewer_certificate {
     cloudfront_default_certificate = true
+  }
+
+  logging_config {
+    bucket            = aws_s3_bucket.chf-logs.bucket_domain_name
+    include_cookies   = false
+    prefix            = "cloudfront_access_logs/${terraform.workspace}-derivatives-video/"
   }
 }
