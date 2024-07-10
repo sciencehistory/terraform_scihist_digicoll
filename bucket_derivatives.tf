@@ -109,6 +109,12 @@ resource "aws_cloudfront_distribution" "derivatives" {
     "S3-Bucket-Name" = "${local.name_prefix}-derivatives"
     "Cloudfront-Distribution-Origin-Id" = "${terraform.workspace}-derivatives.s3"
   }
+
+  logging_config {
+    bucket            = aws_s3_bucket.chf-logs.bucket_domain_name
+    include_cookies   = false
+    prefix            = "cloudfront_access_logs/${terraform.workspace}-derivatives/"
+  }
 }
 
 
@@ -172,3 +178,11 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "derivatives" {
     }
   }
 }
+
+# $ terraform import aws_s3_bucket_logging.originals_logging scihist-digicoll-staging-originals
+resource "aws_s3_bucket_logging" "derivatives_logging" {
+  bucket        = aws_s3_bucket.derivatives.id
+  target_bucket = aws_s3_bucket.chf-logs.id
+  target_prefix = "s3_access_logs/${terraform.workspace}-derivatives/"
+}
+

@@ -111,6 +111,19 @@ resource "aws_cloudfront_distribution" "dzi" {
     "S3-Bucket-Name" = "${local.name_prefix}-dzi"
     "Cloudfront-Distribution-Origin-Id" = "${terraform.workspace}-dzi.s3"
   }
+
+  logging_config {
+    bucket            = aws_s3_bucket.chf-logs.bucket_domain_name
+    include_cookies   = false
+    prefix            = "cloudfront_access_logs/${terraform.workspace}-dzi/"
+  }
+}
+
+# $ terraform import aws_s3_bucket_logging.originals_logging scihist-digicoll-staging-originals
+resource "aws_s3_bucket_logging" "dzi" {
+  bucket        = aws_s3_bucket.dzi.id
+  target_bucket = aws_s3_bucket.chf-logs.id
+  target_prefix = "s3_access_logs/${terraform.workspace}-dzi/"
 }
 
 # probably not really necessary now that we're fronting with

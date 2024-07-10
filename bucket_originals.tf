@@ -96,6 +96,12 @@ resource "aws_cloudfront_distribution" "originals" {
     "S3-Bucket-Name" = "${local.name_prefix}-originals"
     "Cloudfront-Distribution-Origin-Id" = "${terraform.workspace}-originals.s3"
   }
+
+  logging_config {
+    bucket            = aws_s3_bucket.chf-logs.bucket_domain_name
+    include_cookies   = false
+    prefix            = "cloudfront_access_logs/${terraform.workspace}-originals"
+  }
 }
 
 resource "aws_s3_bucket_policy" "originals" {
@@ -157,21 +163,11 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "originals" {
   }
 }
 
-# We may want to put this aws_s3_bucket in a separate file; would be more consistent with the existing setup.
-resource "aws_s3_bucket" "chf-logs" {
-  force_destroy = false
-  bucket        = "chf-logs"
-  tags = {
-    "Role"           = "Production"
-    "S3-Bucket-Name" = "chf-logs"
-    "Service"        = "Systems"
-    "Type"           = "S3"
-  }
+# $ terraform import aws_s3_bucket_logging.originals_logging scihist-digicoll-staging-originals
+resource "aws_s3_bucket_logging" "originals_logging" {
+  bucket        = aws_s3_bucket.originals.id
+  target_bucket = aws_s3_bucket.chf-logs.id
+  target_prefix = "s3_access_logs/${terraform.workspace}-originals/"
 }
 
-# % terraform import aws_s3_bucket_logging.example bucket-name
-# resource "aws_s3_bucket_logging" "originals_logging" {
-#   bucket        = aws_s3_bucket.originals.id
-#   target_bucket = aws_s3_bucket.chf-logs.id
-#   target_prefix = "s3_server_access_${terraform.workspace}_originals/"
-# }
+
