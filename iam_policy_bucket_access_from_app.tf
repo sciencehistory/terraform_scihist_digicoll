@@ -1,3 +1,10 @@
+# Believe these are UNUSED and can be deleted?  But not totally sure?
+
+# * The way we do them in this file as two separate resources with count is also not the way we want to do things.
+#
+# * Not sure the use case of an IAM Policy granting all access to all our buckets?
+
+
 # These two policies govern access to S3
 # from the production and staging apps, respectively.
 

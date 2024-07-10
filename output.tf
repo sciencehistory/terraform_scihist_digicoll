@@ -1,5 +1,9 @@
 # outputs, all-caps ones generally match heroku config var that should be set to value of output
 
+output "AWS_MEDIACONVERT_ROLE_ARN" {
+  value = aws_iam_role.mediaconvert_role.arn
+}
+
 output "S3_BUCKET_DERIVATIVES" {
   value = aws_s3_bucket.derivatives.bucket
 }
