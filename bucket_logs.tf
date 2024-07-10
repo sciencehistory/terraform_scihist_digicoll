@@ -13,3 +13,42 @@ resource "aws_s3_bucket" "chf-logs" {
     "Type"           = "S3"
   }
 }
+
+# in s3_access_logs/ and cloudfront_access_logs/ prefixes, delete objects after 13 months
+resource "aws_s3_bucket_lifecycle_configuration" "chf_logs" {
+  bucket       = "chf-logs"
+
+  rule {
+    id     = "expire_s3_access_logs"
+    status = "Enabled"
+
+    filter {
+      prefix = "s3_access_logs/"
+    }
+
+    expiration {
+      days = 395
+      expired_object_delete_marker = false
+    }
+    noncurrent_version_expiration {
+      noncurrent_days = 395
+    }
+  }
+
+  rule {
+    id     = "expire_cloudfront_access_logs"
+    status = "Enabled"
+
+    filter {
+      prefix = "cloudfront_access_logs/"
+    }
+
+    expiration {
+      days = 395
+      expired_object_delete_marker = false
+    }
+    noncurrent_version_expiration {
+      noncurrent_days = 395
+    }
+  }
+}
