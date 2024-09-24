@@ -203,7 +203,7 @@ resource "aws_cloudfront_response_headers_policy" "cors-with-preflight-and-long-
 #  the private keys need to be exported from 1password in PKCS#8 format
 resource "aws_cloudfront_public_key" "scihist-digicoll" {
   comment     = "public key used by our app for signing urls"
-  encoded_key = file("./${local.name_prefix}-public_key.pem")
+  encoded_key = file("./public_keys/${local.name_prefix}-public_key.pem")
   name        = "${local.name_prefix}-key-2024-1"
 }
 
