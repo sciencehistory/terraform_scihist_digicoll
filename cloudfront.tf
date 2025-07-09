@@ -194,9 +194,6 @@ resource "aws_cloudfront_response_headers_policy" "cors-with-preflight-and-long-
       ]
     }
   }
-
-  security_headers_config {
-  }
 }
 
 # private keys stored in 1password shared valut as `scihist-digicoll-staging_private_key.pem` and `scihist-digicoll-production-private_key.pem`
