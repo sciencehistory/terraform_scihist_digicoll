@@ -31,10 +31,10 @@ resource "aws_s3_bucket_replication_configuration" "derivatives" {
 resource "aws_s3_bucket_policy" "derivatives" {
   bucket = aws_s3_bucket.derivatives.id
   policy = templatefile("templates/s3_cloudfront_access_policy.tftpl",
-                        {
-                          bucket_name : aws_s3_bucket.derivatives.id,
-                          cloudfront_arn : aws_cloudfront_distribution.derivatives.arn
-                        })
+    {
+      bucket_name : aws_s3_bucket.derivatives.id,
+      cloudfront_arn : aws_cloudfront_distribution.derivatives.arn
+  })
 }
 
 resource "aws_s3_bucket_public_access_block" "derivatives" {
@@ -54,7 +54,7 @@ resource "aws_cloudfront_distribution" "derivatives" {
   http_version    = "http2and3"
 
   # Only North America/Europe to save money
-  price_class     = "PriceClass_100"
+  price_class = "PriceClass_100"
 
   default_cache_behavior {
     allowed_methods = [
@@ -80,13 +80,13 @@ resource "aws_cloudfront_distribution" "derivatives" {
   }
 
   origin {
-    connection_attempts       = 3
-    connection_timeout        = 1
-    domain_name               = aws_s3_bucket.derivatives.bucket_regional_domain_name
-    origin_id                 = aws_s3_bucket.derivatives.bucket_regional_domain_name
+    connection_attempts = 3
+    connection_timeout  = 1
+    domain_name         = aws_s3_bucket.derivatives.bucket_regional_domain_name
+    origin_id           = aws_s3_bucket.derivatives.bucket_regional_domain_name
 
     # Sign requests so we can pass through response-content-disposition etc
-    origin_access_control_id  = aws_cloudfront_origin_access_control.signing-s3.id
+    origin_access_control_id = aws_cloudfront_origin_access_control.signing-s3.id
   }
 
   restrictions {
@@ -102,16 +102,16 @@ resource "aws_cloudfront_distribution" "derivatives" {
 
   # Tag same as bucket origin to aggregate costs together
   tags = {
-    "service"        = local.service_tag
-    "use"            = "derivatives"
-    "S3-Bucket-Name" = "${local.name_prefix}-derivatives"
+    "service"                           = local.service_tag
+    "use"                               = "derivatives"
+    "S3-Bucket-Name"                    = "${local.name_prefix}-derivatives"
     "Cloudfront-Distribution-Origin-Id" = "${terraform.workspace}-derivatives.s3"
   }
 
   logging_config {
-    bucket            = aws_s3_bucket.chf-logs.bucket_domain_name
-    include_cookies   = false
-    prefix            = "cloudfront_access_logs/${terraform.workspace}-derivatives/"
+    bucket          = aws_s3_bucket.chf-logs.bucket_domain_name
+    include_cookies = false
+    prefix          = "cloudfront_access_logs/${terraform.workspace}-derivatives/"
   }
 }
 

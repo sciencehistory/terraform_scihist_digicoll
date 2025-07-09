@@ -78,7 +78,7 @@ resource "aws_cloudfront_origin_access_control" "signing-s3" {
 # Cache policy which starts with common CachingOptimized, but also cache based on selected
 # S3 query parameters. Including them in cache policy will make Cloudfront forward them to S3 too.
 #
-resource "aws_cloudfront_cache_policy"  "caching-optimized-plus-s3-params" {
+resource "aws_cloudfront_cache_policy" "caching-optimized-plus-s3-params" {
   name        = "${local.name_prefix}-caching-optimized-plus-s3-params"
   comment     = "Based on Managed-CachingOptimized, but also including select S3 query params"
   default_ttl = 86400
@@ -109,15 +109,15 @@ resource "aws_cloudfront_cache_policy"  "caching-optimized-plus-s3-params" {
 # Import ID for AWS managed response and cache headers policy
 #
 data "aws_cloudfront_response_headers_policy" "Managed-CORS-with-preflight-and-SecurityHeadersPolicy" {
-    name = "Managed-CORS-with-preflight-and-SecurityHeadersPolicy"
+  name = "Managed-CORS-with-preflight-and-SecurityHeadersPolicy"
 }
 
 data "aws_cloudfront_response_headers_policy" "Managed-SecurityHeadersPolicy" {
-    name = "Managed-SecurityHeadersPolicy"
+  name = "Managed-SecurityHeadersPolicy"
 }
 
 data "aws_cloudfront_cache_policy" "Managed-CachingOptimized" {
-    name = "Managed-CachingOptimized"
+  name = "Managed-CachingOptimized"
 }
 
 
