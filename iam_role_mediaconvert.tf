@@ -32,8 +32,8 @@ resource "aws_iam_role" "mediaconvert_role" {
 resource "aws_iam_policy" "mediaconvert_role" {
   description = "Access to S3 buckets necessary for our mediaconvert tasks -- ${terraform.workspace}"
   # name is legacy historical unfortunate for now
-  name        = "${local.name_prefix}-MediaConvertRole"
-  path        = "/"
+  name = "${local.name_prefix}-MediaConvertRole"
+  path = "/"
 
   # Read access to originals, and read/write to any place we might want to store derivatives
   policy = jsonencode(

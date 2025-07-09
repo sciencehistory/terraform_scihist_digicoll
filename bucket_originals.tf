@@ -44,7 +44,7 @@ resource "aws_cloudfront_distribution" "originals" {
   http_version    = "http2and3"
 
   # Only North America/Europe to save money
-  price_class     = "PriceClass_100"
+  price_class = "PriceClass_100"
 
   default_cache_behavior {
     allowed_methods = [
@@ -72,11 +72,11 @@ resource "aws_cloudfront_distribution" "originals" {
   }
 
   origin {
-    connection_attempts       = 3
-    connection_timeout        = 1
-    domain_name               = aws_s3_bucket.originals.bucket_regional_domain_name
-    origin_id                 = aws_s3_bucket.originals.bucket_regional_domain_name
-    origin_access_control_id  = aws_cloudfront_origin_access_control.signing-s3.id
+    connection_attempts      = 3
+    connection_timeout       = 1
+    domain_name              = aws_s3_bucket.originals.bucket_regional_domain_name
+    origin_id                = aws_s3_bucket.originals.bucket_regional_domain_name
+    origin_access_control_id = aws_cloudfront_origin_access_control.signing-s3.id
   }
 
   restrictions {
@@ -91,26 +91,26 @@ resource "aws_cloudfront_distribution" "originals" {
   }
 
   tags = {
-    "service"        = local.service_tag
-    "use"            = "originals"
-    "S3-Bucket-Name" = "${local.name_prefix}-originals"
+    "service"                           = local.service_tag
+    "use"                               = "originals"
+    "S3-Bucket-Name"                    = "${local.name_prefix}-originals"
     "Cloudfront-Distribution-Origin-Id" = "${terraform.workspace}-originals.s3"
   }
 
   logging_config {
-    bucket            = aws_s3_bucket.chf-logs.bucket_domain_name
-    include_cookies   = false
-    prefix            = "cloudfront_access_logs/${terraform.workspace}-originals"
+    bucket          = aws_s3_bucket.chf-logs.bucket_domain_name
+    include_cookies = false
+    prefix          = "cloudfront_access_logs/${terraform.workspace}-originals"
   }
 }
 
 resource "aws_s3_bucket_policy" "originals" {
   bucket = aws_s3_bucket.originals.id
   policy = templatefile("templates/s3_cloudfront_access_policy.tftpl",
-                        {
-                          bucket_name : aws_s3_bucket.originals.id,
-                          cloudfront_arn : aws_cloudfront_distribution.originals.arn
-                        })
+    {
+      bucket_name : aws_s3_bucket.originals.id,
+      cloudfront_arn : aws_cloudfront_distribution.originals.arn
+  })
 }
 
 resource "aws_s3_bucket_public_access_block" "originals" {

@@ -33,10 +33,10 @@ resource "aws_s3_bucket_public_access_block" "derivatives_video" {
 resource "aws_s3_bucket_policy" "derivatives_video" {
   bucket = aws_s3_bucket.derivatives_video.id
   policy = templatefile("templates/s3_cloudfront_access_policy.tftpl",
-                        {
-                          bucket_name : aws_s3_bucket.derivatives_video.id,
-                          cloudfront_arn : aws_cloudfront_distribution.derivatives-video.arn
-                        })
+    {
+      bucket_name : aws_s3_bucket.derivatives_video.id,
+      cloudfront_arn : aws_cloudfront_distribution.derivatives-video.arn
+  })
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "derivatives_video" {
@@ -119,20 +119,20 @@ resource "aws_cloudfront_distribution" "derivatives-video" {
   price_class = "PriceClass_100"
 
   origin {
-    connection_attempts       = 3
-    connection_timeout        = 1
-    domain_name = "scihist-digicoll-${terraform.workspace}-derivatives-video.s3.${var.aws_region}.amazonaws.com"
-    origin_id   = "${terraform.workspace}-derivatives-video.s3"
+    connection_attempts = 3
+    connection_timeout  = 1
+    domain_name         = "scihist-digicoll-${terraform.workspace}-derivatives-video.s3.${var.aws_region}.amazonaws.com"
+    origin_id           = "${terraform.workspace}-derivatives-video.s3"
 
     # Sign requests so we can pass through response-content-disposition etc
-    origin_access_control_id  = aws_cloudfront_origin_access_control.signing-s3.id
+    origin_access_control_id = aws_cloudfront_origin_access_control.signing-s3.id
   }
 
   # add tag matching bucket name tag used for S3 buckets themselves,
   # for cost analysis.
   tags = {
-    "service"        = local.service_tag
-    "use"            = "derivatives-video"
+    "service"                           = local.service_tag
+    "use"                               = "derivatives-video"
     "Cloudfront-Distribution-Origin-Id" = "${terraform.workspace}-derivatives-video.s3"
     "S3-Bucket-Name"                    = "${local.name_prefix}-derivatives-video"
   }
@@ -176,8 +176,8 @@ resource "aws_cloudfront_distribution" "derivatives-video" {
   }
 
   logging_config {
-    bucket            = aws_s3_bucket.chf-logs.bucket_domain_name
-    include_cookies   = false
-    prefix            = "cloudfront_access_logs/${terraform.workspace}-derivatives-video/"
+    bucket          = aws_s3_bucket.chf-logs.bucket_domain_name
+    include_cookies = false
+    prefix          = "cloudfront_access_logs/${terraform.workspace}-derivatives-video/"
   }
 }

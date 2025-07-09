@@ -33,10 +33,10 @@ resource "aws_s3_bucket_replication_configuration" "dzi" {
 resource "aws_s3_bucket_policy" "dzi" {
   bucket = aws_s3_bucket.dzi.id
   policy = templatefile("templates/s3_cloudfront_access_policy.tftpl",
-                        {
-                          bucket_name : aws_s3_bucket.dzi.id,
-                          cloudfront_arn : aws_cloudfront_distribution.dzi.arn
-                        })
+    {
+      bucket_name : aws_s3_bucket.dzi.id,
+      cloudfront_arn : aws_cloudfront_distribution.dzi.arn
+  })
 
 }
 
@@ -56,7 +56,7 @@ resource "aws_cloudfront_distribution" "dzi" {
   http_version    = "http2and3"
 
   # Only North America/Europe to save money
-  price_class     = "PriceClass_100"
+  price_class = "PriceClass_100"
 
   default_cache_behavior {
     allowed_methods = [
@@ -82,13 +82,13 @@ resource "aws_cloudfront_distribution" "dzi" {
   }
 
   origin {
-    connection_attempts       = 3
-    connection_timeout        = 1
-    domain_name               = aws_s3_bucket.dzi.bucket_regional_domain_name
-    origin_id                 = aws_s3_bucket.dzi.bucket_regional_domain_name
+    connection_attempts = 3
+    connection_timeout  = 1
+    domain_name         = aws_s3_bucket.dzi.bucket_regional_domain_name
+    origin_id           = aws_s3_bucket.dzi.bucket_regional_domain_name
 
     # Sign requests to non-public bucket
-    origin_access_control_id  = aws_cloudfront_origin_access_control.signing-s3.id
+    origin_access_control_id = aws_cloudfront_origin_access_control.signing-s3.id
   }
 
   restrictions {
@@ -104,16 +104,16 @@ resource "aws_cloudfront_distribution" "dzi" {
 
   # Tag same as bucket origin to aggregate costs together
   tags = {
-    "service"        = local.service_tag
-    "use"            = "dzi"
-    "S3-Bucket-Name" = "${local.name_prefix}-dzi"
+    "service"                           = local.service_tag
+    "use"                               = "dzi"
+    "S3-Bucket-Name"                    = "${local.name_prefix}-dzi"
     "Cloudfront-Distribution-Origin-Id" = "${terraform.workspace}-dzi.s3"
   }
 
   logging_config {
-    bucket            = aws_s3_bucket.chf-logs.bucket_domain_name
-    include_cookies   = false
-    prefix            = "cloudfront_access_logs/${terraform.workspace}-dzi/"
+    bucket          = aws_s3_bucket.chf-logs.bucket_domain_name
+    include_cookies = false
+    prefix          = "cloudfront_access_logs/${terraform.workspace}-dzi/"
   }
 }
 
