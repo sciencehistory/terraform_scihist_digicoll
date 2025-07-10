@@ -58,11 +58,11 @@ resource "aws_s3_bucket_lifecycle_configuration" "ingest_mount" {
   bucket = aws_s3_bucket.ingest_mount.id
 
   rule {
-    status = "Disabled"
+    status = "Enabled"
     id     = "Expire files"
 
     expiration {
-      days                         = 30
+      days                         = 120
       expired_object_delete_marker = false
     }
   }
