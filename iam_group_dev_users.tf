@@ -51,3 +51,9 @@ resource "aws_iam_group_policy_attachment" "dev_users_write_staging" {
   group      = aws_iam_group.dev_users.name
   policy_arn = aws_iam_policy.write_staging.arn
 }
+
+# aws_iam_group_policy_attachment.dev_users_use_bedrock:
+resource "aws_iam_group_policy_attachment" "dev_users_bedrock_invoke" {
+  group      = aws_iam_group.dev_users.name
+  policy_arn = aws_iam_policy.bedrock_invoke_model.arn
+}
