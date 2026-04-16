@@ -1,7 +1,4 @@
-# Believe these are UNUSED and can be deleted?  But not totally sure?
-
-# * The way we do them in this file as two separate resources with count is also not the way we want to do things.
-#
+# * The way we do permissions in this file as two separate resources with count is not the way we want to do things.
 # * Not sure the use case of an IAM Policy granting all access to all our buckets?
 
 
@@ -42,6 +39,8 @@ resource "aws_iam_policy" "bucket_access_from_app_production" {
             "${aws_s3_bucket.ingest_mount.arn}/*",
             "${aws_s3_bucket.uploads.arn}",
             "${aws_s3_bucket.uploads.arn}/*",
+            "${aws_s3_bucket.public.arn}",
+            "${aws_s3_bucket.public.arn}/*",
 
             "${aws_s3_bucket.originals_backup[0].arn}",
             "${aws_s3_bucket.originals_backup[0].arn}/*",
@@ -97,6 +96,8 @@ resource "aws_iam_policy" "bucket_access_from_app_staging" {
             "${aws_s3_bucket.ingest_mount.arn}/*",
             "${aws_s3_bucket.uploads.arn}",
             "${aws_s3_bucket.uploads.arn}/*",
+            "${aws_s3_bucket.public.arn}",
+            "${aws_s3_bucket.public.arn}/*",
           ]
           Sid = "Stmt1501524130000"
         },
